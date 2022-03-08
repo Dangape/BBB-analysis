@@ -16,6 +16,12 @@ from langdetect import detect
 from nltk.stem import SnowballStemmer
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import CountVectorizer
+from unidecode import unidecode
+from google_trans_new import google_translator
+from PIL import Image
+
+nltk.download('vader_lexicon')
+translator = google_translator()
 
 # Authentication
 consumerKey = 'evXPxqc9rF72M6OCtdeRgDUTQ' #API key
@@ -31,10 +37,11 @@ api = tweepy.API(auth)
 def percentage(part,whole):
  return 100 * float(part)/float(whole)
 
-keyword = '#BBB22'
-n_tweets = int(5)
+keyword = ['#BBB22']
+n_tweets = int(20)
 
-tweets = tweepy.Cursor(api.search_tweets, q=keyword).items(n_tweets)
+tweets = tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets)
+
 positive = 0
 negative = 0
 neutral = 0
@@ -44,6 +51,12 @@ neutral_list = []
 negative_list = []
 positive_list = []
 
+#Contadores
+numPos = 0
+numNeg = 0
+total = 0
+
+# #Buscando tweets
 for tweet in tweets:
     print(tweet.text)
     tweet_list.append(tweet.text)
@@ -54,7 +67,6 @@ for tweet in tweets:
     pos = score['pos']
     comp = score['compound']
     polarity += analysis.sentiment.polarity
-
     if neg > pos:
         negative_list.append(tweet.text)
         negative += 1
@@ -80,7 +92,19 @@ neutral_list = pd.DataFrame(neutral_list)
 negative_list = pd.DataFrame(negative_list)
 positive_list = pd.DataFrame(positive_list)
 
-print('total number: ',len(tweet_list))
-print('positive number: ',len(positive_list))
-print('negative number: ', len(negative_list))
-print('neutral number: ',len(neutral_list))
+def create_wordcloud(text):
+    mask = np.array(Image.open('cloud.png'))
+    stopwords = set(STOPWORDS)
+    wc = WordCloud(background_color='white',
+    mask = mask,
+    max_words=3000,
+    stopwords=stopwords,
+    repeat=True)
+    wc.generate(str(text))
+    wc.to_file('wc.png')
+    print('Word Cloud Saved Successfully')
+    path='wc.png'
+    display(Image.open(path))
+
+ # Creating wordcloud for positive sentiment
+ create_wordcloud(tweet_list['text'].values)
