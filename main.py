@@ -18,7 +18,11 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from sklearn.feature_extraction.text import CountVectorizer
 from unidecode import unidecode
 from google_trans_new import google_translator
+from os import path
 from PIL import Image
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+
+import matplotlib.pyplot as plt
 
 nltk.download('vader_lexicon')
 translator = google_translator()
@@ -92,19 +96,21 @@ neutral_list = pd.DataFrame(neutral_list)
 negative_list = pd.DataFrame(negative_list)
 positive_list = pd.DataFrame(positive_list)
 
-def create_wordcloud(text):
-    mask = np.array(Image.open('cloud.png'))
-    stopwords = set(STOPWORDS)
-    wc = WordCloud(background_color='white',
-    mask = mask,
-    max_words=3000,
-    stopwords=stopwords,
-    repeat=True)
-    wc.generate(str(text))
-    wc.to_file('wc.png')
-    print('Word Cloud Saved Successfully')
-    path='wc.png'
-    display(Image.open(path))
+# #cleaning tweets
+tweet_list.drop_duplicates(inplace=True)
+#Creating new dataframe and new features
+tw_list = pd.DataFrame(tweet_list)
+tw_list['text'] = tw_list[0]
+#
+# #Removing RT, Punctuation etc
+# remove_rt = lambda x: re.sub('RT @\w+: ',' ',x)
+# rt = lambda x: re.sub('(@[A-Za-z0–9]+)|([⁰-9A-Za-z \t])|(\w+:\/\/\S+)',' ',x)
+# tw_list['text'] = tw_list.text.map(remove_rt).map(rt)
+# tw_list['text'] = tw_list.text.str.lower()
+# print(tw_list.head(10))
 
- # Creating wordcloud for positive sentiment
- create_wordcloud(tweet_list['text'].values)
+wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white").generate(str(tw_list['text'].values))
+plt.figure()
+plt.imshow(wordcloud, interpolation="bilinear")
+plt.axis("off")
+plt.show()
