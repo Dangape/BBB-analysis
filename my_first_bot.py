@@ -22,7 +22,7 @@ newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
                 'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','x','n']
+                'co','t','n','desde','so','mim''la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'sim']
 
 stopwords.extend(newStopWords)
 tweet_list = []
@@ -54,12 +54,16 @@ def create_wc(api,keyword,n_tweets):
     links = lambda x: re.sub('/(?:https?|ftp):\/\/[\n\S]+/g', ' ', x)
     hashtags = lambda x: re.sub('/\#\w\w+\s?/g', ' ', x)
     mentions = lambda x: re.sub('/\@\w\w+\s?/g', ' ', x)
+    laughts_ha = lambda x: re.sub('\b(?>a*+(?:ha)++h?|(?:l+o+)++l+)\b', ' ', x)
+    laughts_k = lambda x: re.sub('\b(?>a*+(?:k)++h?|(?:l+o+)++l+)\b', ' ', x)
 
     tw_list['text'] = tw_list.text.map(remove_rt)
     tw_list['text'] = tw_list.text.map(tags)
     tw_list['text'] = tw_list.text.map(links)
     tw_list['text'] = tw_list.text.map(hashtags)
     tw_list['text'] = tw_list.text.map(mentions)
+    tw_list['text'] = tw_list.text.map(laughts_ha)
+    tw_list['text'] = tw_list.text.map(laughts_k)
 
     #Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
@@ -91,7 +95,7 @@ def create_wc(api,keyword,n_tweets):
     media_list.append(response.media_id_string)
 
     status = 'BBB em: ' + dt_string
-    # api.update_status(status = status,media_ids=media_list)
+    api.update_status(status = status,media_ids=media_list)
 
 
 
