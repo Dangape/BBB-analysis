@@ -55,8 +55,8 @@ def create_wc(api,keyword,n_tweets):
     links = lambda x: re.sub('/(?:https?|ftp):\/\/[\n\S]+/g', ' ', x)
     hashtags = lambda x: re.sub('/\#\w\w+\s?/g', ' ', x)
     mentions = lambda x: re.sub('/\@\w\w+\s?/g', ' ', x)
-    laughts_ha = lambda x: re.sub('\b(?>a*+(?:ha)++h?|(?:l+o+)++l+)\b', ' ', x)
-    laughts_k = lambda x: re.sub('\b(?>a*+(?:k)++h?|(?:l+o+)++l+)\b', ' ', x)
+    laughts_ha = lambda x: re.sub('\b(?:a*(?:ha)+h?|(?:l+o+)+l+)\b', ' ', x)
+    laughts_k = lambda x: re.sub('\b(?:k*(?:k)+k?|(?:l+o+)+l+)\b', ' ', x)
 
     tw_list['text'] = tw_list.text.map(remove_rt)
     tw_list['text'] = tw_list.text.map(tags)
@@ -109,11 +109,15 @@ api = create_api()
 # The Scheduling is happening below:
 schedule.every().day.at("10:30").do(create_wc(api,'#BBB22',1000))
 schedule.every().day.at("22:30").do(create_wc(api,'#BBB22',1000))
+schedule.every().day.at("00:30").do(create_wc(api,'#BBB22',1000))
+
 
 while True:
-    schedule.run_pending()
-    logger.info('Tweeted with success!!')
-    time.sleep(1)
-
+    try:
+        schedule.run_pending()
+        logger.info('Tweeted with success!!')
+        time.sleep(2)
+    except:
+        time.sleep(120)
 
 
