@@ -21,11 +21,15 @@ from google_trans_new import google_translator
 from os import path
 from PIL import Image
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-
+from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 
 nltk.download('vader_lexicon')
-translator = google_translator()
+stopwords = nltk.corpus.stopwords.words('portuguese')
+newStopWords = ['né','Se','De','q','vc','e','ter','ne','da','to','tô','o','O','https','t','BBB22','CO','tá',
+                'dar','bbb22','TE','te','Eu','#BBB22','HTTPS','E','pra','tbm','tb','T','t','tt','ja','nao',
+                '#bbb22','#redebbb']
+stopwords.extend(newStopWords)
 
 # Authentication
 consumerKey = 'evXPxqc9rF72M6OCtdeRgDUTQ' #API key
@@ -42,7 +46,7 @@ def percentage(part,whole):
  return 100 * float(part)/float(whole)
 
 keyword = ['#BBB22']
-n_tweets = int(20)
+n_tweets = int(100)
 
 tweets = tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets)
 
@@ -62,8 +66,8 @@ total = 0
 
 # #Buscando tweets
 for tweet in tweets:
-    print(tweet.text)
-    tweet_list.append(tweet.text)
+    # print(tweet.text)
+    tweet_list.append(unidecode(tweet.text))
     analysis = TextBlob(tweet.text)
     score = SentimentIntensityAnalyzer().polarity_scores(tweet.text)
     neg = score['neg']
@@ -77,7 +81,6 @@ for tweet in tweets:
     elif pos > neg:
         positive_list.append(tweet.text)
         positive += 1
-
     elif pos == neg:
         neutral_list.append(tweet.text)
         neutral += 1
@@ -101,16 +104,18 @@ tweet_list.drop_duplicates(inplace=True)
 #Creating new dataframe and new features
 tw_list = pd.DataFrame(tweet_list)
 tw_list['text'] = tw_list[0]
-#
-# #Removing RT, Punctuation etc
-# remove_rt = lambda x: re.sub('RT @\w+: ',' ',x)
-# rt = lambda x: re.sub('(@[A-Za-z0–9]+)|([⁰-9A-Za-z \t])|(\w+:\/\/\S+)',' ',x)
-# tw_list['text'] = tw_list.text.map(remove_rt).map(rt)
-# tw_list['text'] = tw_list.text.str.lower()
-# print(tw_list.head(10))
 
-wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white").generate(str(tw_list['text'].values))
-plt.figure()
-plt.imshow(wordcloud, interpolation="bilinear")
-plt.axis("off")
-plt.show()
+# #Removing RT, Punctuation etc
+remove_rt = lambda x: re.sub('RT @\w+: ',' ',x)
+tags = lambda x: re.sub(' /<[^>]+>/',' ',x)
+tw_list['text'] = tw_list.text.map(remove_rt).map(tags)
+tw_list['text'] = tw_list.text.str.lower()
+
+tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stopwords)]))
+print(tw_list.head(10))
+# wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white").\
+#     generate(str(tw_list['text'].values))
+# plt.figure()
+# plt.imshow(wordcloud, interpolation="bilinear")
+# plt.axis("off")
+# plt.show()
