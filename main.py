@@ -31,7 +31,8 @@ nltk.download('vader_lexicon')
 stopwords = nltk.corpus.stopwords.words('portuguese')
 newStopWords = ['né','Se','De','q','vc','e','ter','ne','da','to','tô','o','O','https','t','BBB22','CO','tá',
                 'dar','bbb22','TE','te','Eu','#BBB22','HTTPS','E','pra','tbm','tb','T','t','tt','ja','nao',
-                '#bbb22','#redebbb','bbb','ai','desse','quis','d','voce','vai','ta','#bbb']
+                '#bbb22','#redebbb','bbb','ai','desse','quis','d','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
+                'pro','dela','vem','ja','o','outra','porque','por que','por quê','porquê','bem']
 stopwords.extend(newStopWords)
 
 # Authentication
@@ -49,7 +50,7 @@ def percentage(part,whole):
  return 100 * float(part)/float(whole)
 
 keyword = ['#BBB22']
-n_tweets = int(100)
+n_tweets = int(1000)
 
 tweets = tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets)
 
@@ -109,14 +110,13 @@ tw_list = pd.DataFrame(tweet_list)
 tw_list['text'] = tw_list[0]
 
 # #Removing RT, Punctuation etc
+tw_list['text'] = tw_list.text.str.lower()
 tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stopwords)]))
 remove_rt = lambda x: re.sub('RT @\w+: ',' ',x)
 tags = lambda x: re.sub(' /<[^>]+>/',' ',x)
 links = lambda x: re.sub(r"http\S+", ' ', x)
+
 tw_list['text'] = tw_list.text.map(remove_rt).map(tags).map(links)
-tw_list['text'] = tw_list.text.str.lower()
-# Remove punctuation
-# tw_list['text'] = tw_list['text'].str.replace('[^ws]', '', regex=True)
 # Remove digits
 text = tw_list['text'].str.replace('[d]+', '', regex=True)
 
@@ -127,4 +127,5 @@ wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white")
 plt.figure()
 plt.imshow(wordcloud, interpolation="bilinear")
 plt.axis("off")
+plt.savefig('wordcloud.png')
 plt.show()
