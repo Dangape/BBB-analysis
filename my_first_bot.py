@@ -9,7 +9,6 @@ import nltk
 import pycountry
 import re
 import string
-from bot import WordCloud, STOPWORDS
 from PIL import Image
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from langdetect import detect
@@ -46,9 +45,10 @@ def create_wc(api,keyword,n_tweets):
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets):
         tweet_list.append(unidecode(tweet.text))
     # #cleaning tweets
-    tweet_list.drop_duplicates(inplace=True)
-    # Creating new dataframe and new features
     tw_list = pd.DataFrame(tweet_list)
+    tw_list.drop_duplicates(inplace=True)
+    # Creating new dataframe and new features
+    # tw_list = pd.DataFrame(tweet_list)
     tw_list['text'] = tw_list[0]
 
     # Lowercase
@@ -72,6 +72,7 @@ def create_wc(api,keyword,n_tweets):
     # text = tw_list['text'].str.replace('[d]+', '', regex=True)
 
     # create a wordcloud
+    logger.info("Generating WC")
     wc = WordCloud(background_color='white',
                    collocations=False,
                    width=400,
@@ -84,10 +85,11 @@ def create_wc(api,keyword,n_tweets):
     plt.axis("off")
     plt.savefig('wordcloud.png')
 
+    logger.info("Tweetting")
     media_list = list()
     response = api.media_upload('wordcloud.png')
     media_list.append(response.media_id_string)
-    api.update_status(media_ids=media_list)
+    api.update_status(status = 'teste',media_ids=media_list)
 
 # # Authentication
 # consumerKey = 'evXPxqc9rF72M6OCtdeRgDUTQ' #API key
@@ -194,18 +196,22 @@ def create_wc(api,keyword,n_tweets):
 # plt.axis("off")
 # plt.savefig('wordcloud.png')
 # plt.show()
-schedule.every(1).minutes.do(create_wc)
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
 
-def main():
-    api = create_api()
-    while True:
-        create_wc(api)
-        logger.info("Waiting...")
-        time.sleep(60)
 
-if __name__ == "__main__":
-    main()
+# def main():
+api = create_api()
+create_wc(api,'#BBB22',200)
+logger.info('Tweeted with success!!')
+    # while True:
+    #     create_wc(api)
+    #     logger.info("Waiting...")
+    #     time.sleep(60)
+
+# schedule.every(1).minutes.do(create_wc(api,'#BBB22',200))
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+
+
+

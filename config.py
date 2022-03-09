@@ -6,15 +6,14 @@ import os
 logger = logging.getLogger()
 
 def create_api():
-    consumer_key = os.getenv("CONSUMER_KEY")
-    consumer_secret = os.getenv("CONSUMER_SECRET")
-    access_token = os.getenv("ACCESS_TOKEN")
-    access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
+    consumer_key = 'AxrLnGCzWymdqtyaGyuPps5oa' #API key
+    consumer_secret = 'dDZP1s8kCO5fg2yM3sVv60cFb0Zhmj0DT2cgh5ZneJDUEerhQM' #API key secret
+    access_token = '1460657321839890436-ZnRI0HMOYTVNpWh7j0QIM4m62G4qCo' #Access token
+    access_token_secret = 'janLV9AZyllBqORJJfltkegaeYISDNTbflUZZtCLWmgEB' #Access token secret
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth, wait_on_rate_limit=True,
-        wait_on_rate_limit_notify=True)
+    api = tweepy.API(auth)
     try:
         api.verify_credentials()
     except Exception as e:
