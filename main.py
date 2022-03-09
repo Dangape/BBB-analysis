@@ -32,7 +32,7 @@ stopwords = nltk.corpus.stopwords.words('portuguese')
 newStopWords = ['né','Se','De','q','vc','e','ter','ne','da','to','tô','o','O','https','t','BBB22','CO','tá',
                 'dar','bbb22','TE','te','Eu','#BBB22','HTTPS','E','pra','tbm','tb','T','t','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','d','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
-                'pro','dela','vem','ja','o','outra','porque','por que','por quê','porquê','bem']
+                'pro','dela','vem','ja','o','outra','porque','por que','por quê','porquê','bem','rt','todo','tao']
 stopwords.extend(newStopWords)
 
 # Authentication
@@ -122,10 +122,16 @@ text = tw_list['text'].str.replace('[d]+', '', regex=True)
 
 print(tw_list.head(10))
 
-wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white").\
-    generate(str(tw_list['text'].values))
+# create a wordcloud
+wc = WordCloud(background_color='white',
+               collocations=False,
+               width=600,
+               height=300,
+               contour_width=3,
+               contour_color='black',
+               stopwords=stopwords).generate(str(tw_list['text'].values))
 plt.figure()
-plt.imshow(wordcloud, interpolation="bilinear")
+plt.imshow(wc, interpolation="bilinear")
 plt.axis("off")
 plt.savefig('wordcloud.png')
 plt.show()
