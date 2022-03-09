@@ -3,14 +3,15 @@ import pandas as pd
 import nltk
 import re
 from unidecode import unidecode
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from wordcloud import WordCloud
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 import spacy
 import logging
 from config import create_api
+from datetime import datetime
 import schedule
-from datetime import datetime, date
+import time
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('vader_lexicon')
@@ -102,17 +103,17 @@ def create_wc(api,keyword,n_tweets):
 
 # def main():
 api = create_api()
-create_wc(api,'#BBB22',500)
-logger.info('Tweeted with success!!')
-    # while True:
-    #     create_wc(api)
-    #     logger.info("Waiting...")
-    #     time.sleep(60)
+# create_wc(api,'#BBB22',500)
 
-# schedule.every(1).minutes.do(create_wc(api,'#BBB22',200))
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+
+# The Scheduling is happening below:
+schedule.every().day.at("10:30").do(create_wc(api,'#BBB22',1000))
+schedule.every().day.at("22:30").do(create_wc(api,'#BBB22',1000))
+
+while True:
+    schedule.run_pending()
+    logger.info('Tweeted with success!!')
+    time.sleep(1)
 
 
 
