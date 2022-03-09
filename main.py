@@ -23,12 +23,15 @@ from PIL import Image
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
+import spacy
+
+nlp = spacy.load('en_core_web_sm')
 
 nltk.download('vader_lexicon')
 stopwords = nltk.corpus.stopwords.words('portuguese')
 newStopWords = ['né','Se','De','q','vc','e','ter','ne','da','to','tô','o','O','https','t','BBB22','CO','tá',
                 'dar','bbb22','TE','te','Eu','#BBB22','HTTPS','E','pra','tbm','tb','T','t','tt','ja','nao',
-                '#bbb22','#redebbb']
+                '#bbb22','#redebbb','bbb','ai','desse','quis','d','voce','vai','ta','#bbb']
 stopwords.extend(newStopWords)
 
 # Authentication
@@ -106,16 +109,22 @@ tw_list = pd.DataFrame(tweet_list)
 tw_list['text'] = tw_list[0]
 
 # #Removing RT, Punctuation etc
+tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stopwords)]))
 remove_rt = lambda x: re.sub('RT @\w+: ',' ',x)
 tags = lambda x: re.sub(' /<[^>]+>/',' ',x)
-tw_list['text'] = tw_list.text.map(remove_rt).map(tags)
+links = lambda x: re.sub(r"http\S+", ' ', x)
+tw_list['text'] = tw_list.text.map(remove_rt).map(tags).map(links)
 tw_list['text'] = tw_list.text.str.lower()
+# Remove punctuation
+# tw_list['text'] = tw_list['text'].str.replace('[^ws]', '', regex=True)
+# Remove digits
+text = tw_list['text'].str.replace('[d]+', '', regex=True)
 
-tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stopwords)]))
 print(tw_list.head(10))
-# wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white").\
-#     generate(str(tw_list['text'].values))
-# plt.figure()
-# plt.imshow(wordcloud, interpolation="bilinear")
-# plt.axis("off")
-# plt.show()
+
+wordcloud = WordCloud(max_font_size=50, max_words=100, background_color="white").\
+    generate(str(tw_list['text'].values))
+plt.figure()
+plt.imshow(wordcloud, interpolation="bilinear")
+plt.axis("off")
+plt.show()
