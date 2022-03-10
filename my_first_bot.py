@@ -18,6 +18,10 @@ nltk.download('vader_lexicon')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
+api = create_api()
+keyword = '#BBB22 OR #bbb22'
+n_tweets = 1000
+
 stopwords = nltk.corpus.stopwords.words('portuguese')
 newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','tá',
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
@@ -32,7 +36,7 @@ tweet_list = []
 now = datetime.now()
 dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
-def create_wc(api,keyword,n_tweets):
+def create_wc():
     logger.info("Getting tweets")
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets):
         tweet_list.append(unidecode(tweet.text))
@@ -74,7 +78,6 @@ def create_wc(api,keyword,n_tweets):
     tw_list.to_excel(writer, engine='xlsxwriter')
     writer.save()
 
-
     # create a wordcloud
     logger.info("Generating WC")
     wc = WordCloud(background_color='white',
@@ -98,26 +101,20 @@ def create_wc(api,keyword,n_tweets):
     status = 'BBB em: ' + dt_string
     api.update_status(status = status,media_ids=media_list)
 
-
-
-
-# def main():
-api = create_api()
-# create_wc(api,'#BBB22',500)
-
-
 # The Scheduling is happening below:
-schedule.every().day.at("10:30").do(create_wc(api,'#BBB22',1000))
-schedule.every().day.at("22:30").do(create_wc(api,'#BBB22',1000))
-schedule.every().day.at("00:30").do(create_wc(api,'#BBB22',1000))
+schedule.every().day.at("10:30").do(create_wc)
+schedule.every().day.at("21:30").do(create_wc)
+schedule.every().day.at("23:00").do(create_wc)
+schedule.every().day.at("23:30").do(create_wc)
+schedule.every().day.at("00:30").do(create_wc)
 
 
 while True:
     try:
         schedule.run_pending()
-        logger.info('Tweeted with success!!')
-        time.sleep(2)
+        time.sleep(1)
     except:
+        print('Error...')
         time.sleep(120)
 
 
