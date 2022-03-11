@@ -71,8 +71,8 @@ def create_wc():
     ct = datetime.now(tz=tz)
     dt_string = ct.strftime("%d/%m/%Y %H:%M:%S")
     # logger.info("Getting tweets")
-    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets):
-        tweet_list.append(unidecode(tweet.text))
+    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
+        tweet_list.append(unidecode(tweet.full_text))
     # #cleaning tweets
     tw_list = pd.DataFrame(tweet_list)
     tw_list.drop_duplicates(inplace=True)

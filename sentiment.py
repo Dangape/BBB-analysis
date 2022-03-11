@@ -11,6 +11,7 @@ import spacy
 import logging
 from config import create_api, remove_hashtag_and_mention
 from datetime import datetime
+from deep_translator import GoogleTranslator
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('vader_lexicon')
@@ -32,18 +33,21 @@ newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https',
                 'ate', 'oq', 'ser', 'kkk', 'kk', 'kkkk', 'kkkkk', 'kkkkkk']
 
 stopwords.extend(newStopWords)
-tweet_list = []
+# tweet_list = []
+tweet_list = {'text':[],'created_at':[]}
 
-
-def create_wc():
+def create_wc(keyword,n_tweets):
     logger.info("Getting tweets")
-    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt').items(n_tweets):
-        tweet_list.append(unidecode(tweet.text))
+    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
+        tweet_list['text'].append(unidecode(tweet.full_text))
+        tweet_list['created_at'].append(pd.to_datetime(tweet.created_at).date())
+
     # #cleaning tweets
-    tw_list = pd.DataFrame(tweet_list)
+    # tw_list = pd.DataFrame(tweet_list)
+    tw_list = pd.concat({k: pd.Series(v) for k, v in tweet_list.items()}, axis=1)
     tw_list.drop_duplicates(inplace=True)
-    tw_list['original'] = tw_list[0]
-    tw_list['text'] = tw_list[0]
+    # tw_list['original'] = tw_list[0]
+    # tw_list['text'] = tw_list[0]
 
     # Lowercase
     tw_list['text'] = tw_list.text.str.lower()
@@ -67,7 +71,10 @@ def create_wc():
     # Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
 
+    tw_list['en_text'] = tw_list['text'].apply(lambda x: GoogleTranslator(source='auto', target='en').translate(x))
     # create excel writer object
-    writer = pd.ExcelWriter('output.xlsx')
+    writer = pd.ExcelWriter('scooby.xlsx')
     tw_list.to_excel(writer, engine='xlsxwriter')
     writer.save()
+
+create_wc('scooby #bbb22',50)
