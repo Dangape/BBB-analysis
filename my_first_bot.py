@@ -8,7 +8,7 @@ from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 import spacy
 import logging
-from config import create_api
+from config import create_api, remove_hashtag_and_mention
 from datetime import datetime
 import schedule
 import time
@@ -29,7 +29,7 @@ newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
                 'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','n','desde','so','mim''la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser']
+                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk']
 
 stopwords.extend(newStopWords)
 tweet_list = []
@@ -58,19 +58,15 @@ def create_wc():
     tags = lambda x: re.sub(' /<[^>]+>/', ' ', x)
 
     #Remove links
-    links = lambda x: re.sub('/(?:https?|ftp):\/\/[\n\S]+/g', ' ', x)
-    hashtags = lambda x: re.sub('/\#\w\w+\s?/g', ' ', x)
-    mentions = lambda x: re.sub('/\@\w\w+\s?/g', ' ', x)
-    laughts_ha = lambda x: re.sub('\b(?:a*(?:ha)+h?|(?:l+o+)+l+)\b', ' ', x)
-    laughts_k = lambda x: re.sub('\b(?:k*(?:k)+k?|(?:l+o+)+l+)\b', ' ', x)
+    links = lambda x: re.sub(r'http\S+',' ',x)
+
 
     tw_list['text'] = tw_list.text.map(remove_rt)
     tw_list['text'] = tw_list.text.map(tags)
     tw_list['text'] = tw_list.text.map(links)
-    tw_list['text'] = tw_list.text.map(hashtags)
-    tw_list['text'] = tw_list.text.map(mentions)
-    tw_list['text'] = tw_list.text.map(laughts_ha)
-    tw_list['text'] = tw_list.text.map(laughts_k)
+
+    # Remove stopwords
+    tw_list['text'] = tw_list['text'].apply(lambda x: remove_hashtag_and_mention(x))
 
     #Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
@@ -93,32 +89,15 @@ def create_wc():
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
     plt.tight_layout(pad=0)
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    logger.info("Tweetting")
-    response = api.media_upload(filename="wordcloud", file=buf)
+    plt.savefig('wordcloud.png')
+    # buf = io.BytesIO()
+    # plt.savefig(buf, format='png')
+    # buf.seek(0)
+    # logger.info("Tweetting")
+    # response = api.media_upload(filename="wordcloud", file=buf)
 
-    status = 'BBB em: ' + dt_string
-    api.update_status(status = status,media_ids=[response.media_id_string])
+    # status = 'BBB em: ' + dt_string
+    # api.update_status(status = status,media_ids=[response.media_id_string])
 
 
 create_wc()
-# # The Scheduling is happening below:
-# schedule.every().day.at("10:30").do(create_wc)
-# schedule.every().day.at("21:30").do(create_wc)
-# schedule.every().day.at("22:30").do(create_wc)
-# schedule.every().day.at("23:00").do(create_wc)
-# schedule.every().day.at("23:30").do(create_wc)
-# schedule.every().day.at("00:30").do(create_wc)
-#
-#
-# while True:
-#     try:
-#         schedule.run_pending()
-#         time.sleep(1)
-#     except:
-#         print('Error...')
-#         time.sleep(120)
-
-

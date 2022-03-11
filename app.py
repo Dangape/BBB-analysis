@@ -1,6 +1,5 @@
 
 import json
-import os
 import tweepy
 import re
 from unidecode import unidecode
@@ -8,11 +7,11 @@ from wordcloud import WordCloud
 from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 from datetime import datetime
-import time
 import nltk
 import pandas as pd
 import io
 import pytz
+import string
 
 consumer_key = 'AxrLnGCzWymdqtyaGyuPps5oa'  # API key
 consumer_secret = 'dDZP1s8kCO5fg2yM3sVv60cFb0Zhmj0DT2cgh5ZneJDUEerhQM' # API key secret
@@ -28,7 +27,7 @@ newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
                 'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','n','desde','so','mim''la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser']
+                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk']
 
 stopwords.extend(newStopWords)
 
@@ -39,6 +38,19 @@ def handler(event, context):
         'statusCode': 200,
         'body': json.dumps('Tweet with Success using AWS Lambda!')
     }
+
+def remove_hashtag_and_mention(text):
+    entity_prefixes = ['@','#']
+    for separator in  string.punctuation:
+        if separator not in entity_prefixes :
+            text = text.replace(separator,' ')
+    words = []
+    for word in text.split():
+        word = word.strip()
+        if word:
+            if word[0] not in entity_prefixes:
+                words.append(word)
+    return ' '.join(words)
 
 def create_wc():
     # Authentication
@@ -76,20 +88,15 @@ def create_wc():
     # Remove tags
     tags = lambda x: re.sub(' /<[^>]+>/', ' ', x)
 
-    # Remove links, mentions, hashtags, laughts
-    links = lambda x: re.sub('/(?:https?|ftp):\/\/[\n\S]+/g', ' ', x)
-    hashtags = lambda x: re.sub('/\#\w\w+\s?/g', ' ', x)
-    mentions = lambda x: re.sub('/\@\w\w+\s?/g', ' ', x)
-    laughts_ha = lambda x: re.sub('\b(?:a*(?:ha)+h?|(?:l+o+)+l+)\b', ' ', x)
-    laughts_k = lambda x: re.sub('\b(?:k*(?:k)+k?|(?:l+o+)+l+)\b', ' ', x)
+    # Remove links
+    links = lambda x: re.sub(r'http\S+', ' ', x)
 
     tw_list['text'] = tw_list.text.map(remove_rt)
     tw_list['text'] = tw_list.text.map(tags)
     tw_list['text'] = tw_list.text.map(links)
-    tw_list['text'] = tw_list.text.map(hashtags)
-    tw_list['text'] = tw_list.text.map(mentions)
-    tw_list['text'] = tw_list.text.map(laughts_ha)
-    tw_list['text'] = tw_list.text.map(laughts_k)
+
+    # Remove hashtag and mention
+    tw_list['text'] = tw_list['text'].apply(lambda x: remove_hashtag_and_mention(x))
 
     # Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
@@ -112,7 +119,7 @@ def create_wc():
     buf.seek(0)
     response = api.media_upload(filename="wordcloud", file=buf)
 
-    status = 'BBB EM: ' + dt_string + '#BBB22 #bbb22'
+    status = 'BBB EM: ' + dt_string + ' #BBB22 #bbb22'
     api.update_status(status = status ,media_ids=[response.media_id_string])
 
 
