@@ -22,18 +22,22 @@ keyword = '#BBB22 OR #bbb22'
 n_tweets = 1000
 
 stopwords = nltk.corpus.stopwords.words('portuguese')
-newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','tá',
-                'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
-                '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
-                'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk']
+newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https', 'BBB22', 'tá',
+                'dar', 'bbb22', 'te', 'eu', '#BBB22', 'HTTPS', 'pra', 'tbm', 'tb', 'tt', 'ja', 'nao',
+                '#bbb22', '#redebbb', 'bbb', 'ai', 'desse', 'quis', 'voce', 'vai', 'ta', '#bbb', 'ela', 'sobre', 'cada',
+                'ah', 'mas', 'mais',
+                'pro', 'dela', 'vem', 'ja', 'outra', 'porque', 'por que', 'por quê', 'porquê', 'bem', 'rt', 'todo',
+                'tao', 'acho', 'sao', 'voces', 'pq',
+                'co', 't', 'n', 'desde', 'so', 'mim', 'la', 'quer', 'fez', 'agora', 'aqui', 'vcs', 'gente', 'deu',
+                'ate', 'oq', 'ser', 'kkk', 'kk', 'kkkk', 'kkkkk', 'kkkkkk']
 
 stopwords.extend(newStopWords)
 tweet_list = []
 
+
 def create_wc():
     logger.info("Getting tweets")
-    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets):
+    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt').items(n_tweets):
         tweet_list.append(unidecode(tweet.text))
     # #cleaning tweets
     tw_list = pd.DataFrame(tweet_list)
@@ -44,15 +48,14 @@ def create_wc():
     # Lowercase
     tw_list['text'] = tw_list.text.str.lower()
 
-    #Remove RT
+    # Remove RT
     remove_rt = lambda x: re.sub('rt @\w+: ', ' ', x)
 
-    #Remove tags
+    # Remove tags
     tags = lambda x: re.sub(' /<[^>]+>/', ' ', x)
 
-    #Remove links
-    links = lambda x: re.sub(r'http\S+',' ',x)
-
+    # Remove links
+    links = lambda x: re.sub(r'http\S+', ' ', x)
 
     tw_list['text'] = tw_list.text.map(remove_rt)
     tw_list['text'] = tw_list.text.map(tags)
@@ -61,11 +64,10 @@ def create_wc():
     # Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: remove_hashtag_and_mention(x))
 
-    #Remove stopwords
+    # Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
 
     # create excel writer object
     writer = pd.ExcelWriter('output.xlsx')
     tw_list.to_excel(writer, engine='xlsxwriter')
     writer.save()
-
