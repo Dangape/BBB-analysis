@@ -25,7 +25,7 @@ def create_api():
 
 def remove_hashtag_and_mention(text):
     entity_prefixes = ['@','#']
-    for separator in  string.punctuation:
+    for separator in string.punctuation:
         if separator not in entity_prefixes :
             text = text.replace(separator,' ')
     words = []
