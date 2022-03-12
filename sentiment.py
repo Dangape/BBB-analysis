@@ -40,7 +40,7 @@ def create_wc(keyword,n_tweets):
     logger.info("Getting tweets")
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
         tweet_list['text'].append(unidecode(tweet.full_text))
-        tweet_list['created_at'].append(pd.to_datetime(tweet.created_at).date())
+        tweet_list['created_at'].append(pd.to_datetime(tweet.created_at).strftime("%d/%m/%Y %H:%M:%S"))
 
     # #cleaning tweets
     # tw_list = pd.DataFrame(tweet_list)
@@ -50,6 +50,7 @@ def create_wc(keyword,n_tweets):
     # tw_list['text'] = tw_list[0]
 
     # Lowercase
+    tw_list['original'] = tw_list['text']
     tw_list['text'] = tw_list.text.str.lower()
 
     # Remove RT
@@ -73,8 +74,11 @@ def create_wc(keyword,n_tweets):
 
     tw_list['en_text'] = tw_list['text'].apply(lambda x: GoogleTranslator(source='auto', target='en').translate(x))
     # create excel writer object
+
+    logger.info("Saving to excel...")
     writer = pd.ExcelWriter('scooby.xlsx')
     tw_list.to_excel(writer, engine='xlsxwriter')
     writer.save()
+    logger.info("Success!!")
 
 create_wc('scooby #bbb22',50)
