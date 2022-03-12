@@ -12,6 +12,8 @@ import logging
 from config import create_api, remove_hashtag_and_mention
 from datetime import datetime
 from deep_translator import GoogleTranslator
+from textblob import TextBlob as tb
+import numpy as np
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('vader_lexicon')
@@ -19,8 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 api = create_api()
-keyword = '#BBB22 OR #bbb22'
-n_tweets = 1000
+
 
 stopwords = nltk.corpus.stopwords.words('portuguese')
 newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https', 'BBB22', 'tá',
@@ -36,6 +37,7 @@ stopwords.extend(newStopWords)
 tweet_list = {'text':[],'created_at':[]}
 
 def create_wc(keyword,n_tweets):
+    score = []
     logger.info("Getting tweets")
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
         tweet_list['text'].append(unidecode(tweet.full_text))
@@ -72,10 +74,16 @@ def create_wc(keyword,n_tweets):
     tw_list['en_text'] = tw_list['text'].apply(lambda x: GoogleTranslator(source='auto', target='en').translate(x))
     # create excel writer object
 
-    logger.info("Saving to excel...")
-    writer = pd.ExcelWriter('scooby.xlsx')
-    tw_list.to_excel(writer, engine='xlsxwriter')
-    writer.save()
-    logger.info("Success!!")
+    logger.info("Getting polarity...")
+    for tweet in tw_list['en_text']:
+        analysis = tb(tweet)
+        polarity = analysis.sentiment.polarity
+        score.append(polarity)
 
-create_wc('scooby #bbb22',50)
+    logger.info("Success!!")
+    return np.mean(score)
+
+tw_list = create_wc('arthur #BBB22 #bbb22',500)
+
+
+
