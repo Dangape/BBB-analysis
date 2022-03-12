@@ -33,7 +33,6 @@ newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https',
                 'ate', 'oq', 'ser', 'kkk', 'kk', 'kkkk', 'kkkkk', 'kkkkkk']
 
 stopwords.extend(newStopWords)
-# tweet_list = []
 tweet_list = {'text':[],'created_at':[]}
 
 def create_wc(keyword,n_tweets):
@@ -46,8 +45,6 @@ def create_wc(keyword,n_tweets):
     # tw_list = pd.DataFrame(tweet_list)
     tw_list = pd.concat({k: pd.Series(v) for k, v in tweet_list.items()}, axis=1)
     tw_list.drop_duplicates(inplace=True)
-    # tw_list['original'] = tw_list[0]
-    # tw_list['text'] = tw_list[0]
 
     # Lowercase
     tw_list['original'] = tw_list['text']

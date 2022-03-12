@@ -5,6 +5,7 @@ import os
 import string
 import requests
 import re
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger()
 
@@ -38,8 +39,3 @@ def remove_hashtag_and_mention(text):
                 words.append(word)
     return ' '.join(words)
 
-def followers(user):
-    url = 'https://www.instagram.com/' + user
-    r = requests.get(url).text
-    followers = re.search('"edge_followed_by":{"count":([0-9]+)}',r).group(1)
-    return followers

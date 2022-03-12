@@ -21,8 +21,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 api = create_api()
-keyword = '#BBB22 OR #bbb22'
-n_tweets = 1000
 
 stopwords = nltk.corpus.stopwords.words('portuguese')
 newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','tá',
@@ -38,7 +36,7 @@ tweet_list = []
 now = datetime.now()
 dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
 
-def create_wc():
+def create_wc(keyword,n_tweets):
     logger.info("Getting tweets")
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang = 'pt').items(n_tweets):
         tweet_list.append(unidecode(tweet.text))
@@ -90,14 +88,5 @@ def create_wc():
     plt.axis("off")
     plt.tight_layout(pad=0)
     plt.savefig('wordcloud.png')
-    # buf = io.BytesIO()
-    # plt.savefig(buf, format='png')
-    # buf.seek(0)
-    # logger.info("Tweetting")
-    # response = api.media_upload(filename="wordcloud", file=buf)
 
-    # status = 'BBB em: ' + dt_string
-    # api.update_status(status = status,media_ids=[response.media_id_string])
-
-
-create_wc()
+create_wc('#BBB22 OR #bbb22',1000)
