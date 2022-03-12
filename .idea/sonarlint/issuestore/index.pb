@@ -6,3 +6,9 @@
 :
 
 dockerfile,5\5\558c49b604560afd1841f2a7b49e2f60bd1f99b3
+9
+	config.py,1\a\1a1b9769344cb239f2e540e1e6ee1efa2d3034ea
+6
+app.py,1\3\13cce7fd076299c81b4986166f3d822791c9490e
+?
+my_first_bot.py,7\c\7cecae386341bb10cdba4a56d3698f8874a9c736

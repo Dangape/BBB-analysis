@@ -6,6 +6,10 @@ from datetime import datetime,timezone,timedelta
 import statistics
 import pytz
 import time
+import selenium
+from selenium import webdriver
+
+
 
 consumer_key = 'AxrLnGCzWymdqtyaGyuPps5oa' #API key
 consumer_secret = 'dDZP1s8kCO5fg2yM3sVv60cFb0Zhmj0DT2cgh5ZneJDUEerhQM' #API key secret
@@ -50,6 +54,7 @@ data['user_tt'] = players_twitter
 data['followers_insta'] = instagram_followers
 data['date'] = dt_string
 
+
 data['followers_tt'] = data.apply(lambda x: api.get_user(screen_name=str(x.user_tt)).followers_count, axis=1)
 data['like_mean_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['mean_likes'], axis = 1)
 data['rt_mean_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['mean_rts'], axis = 1)
@@ -61,6 +66,8 @@ data['rt_follower'] = data['total_rts_5days']/data['followers_tt']
 data['likes_follower'] = data['total_likes_5days']/data['followers_tt']
 
 # create excel writer object
-writer = pd.ExcelWriter('social_data.xlsx')
+dt_string = today.strftime("%Y_%m_%d")
+file_name = 'social_data_'+dt_string+'.xlsx'
+writer = pd.ExcelWriter(file_name)
 data.to_excel(writer, engine='xlsxwriter')
 writer.save()
