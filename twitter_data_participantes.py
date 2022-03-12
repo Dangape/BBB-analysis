@@ -50,13 +50,11 @@ data['user_tt'] = players_twitter
 data['followers_insta'] = instagram_followers
 data['date'] = dt_string
 
-for player in players_twitter:
-    info = count_rt_likes(str(player))
-    data['followers_tt'] = data.apply(lambda x: api.get_user(screen_name=str(x.user_tt)).followers_count, axis=1)
-    data['like_mean_5days'] = data.apply(lambda x: info['mean_likes'], axis = 1)
-    data['rt_mean_5days'] = data.apply(lambda x: info['mean_rts'], axis = 1)
-    data['like_mean_5days'] = data.apply(lambda x: info['total_likes'], axis = 1)
-    data['total_rts_5days'] = data.apply(lambda x: info['total_rts'], axis = 1)
+data['followers_tt'] = data.apply(lambda x: api.get_user(screen_name=str(x.user_tt)).followers_count, axis=1)
+data['like_mean_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['mean_likes'], axis = 1)
+data['rt_mean_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['mean_rts'], axis = 1)
+data['total_likes_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['total_likes'], axis = 1)
+data['total_rts_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['total_rts'], axis = 1)
 
 #new columns
 data['rt_follower'] = data['total_rts_5days']/data['followers_tt']
