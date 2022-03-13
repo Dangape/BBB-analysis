@@ -1,0 +1,4 @@
+
+Cpython:S14812"&Remove the unused local variable "ex".(¾·¿‡üÿÿÿÿ
+Bpython:S1481U"%Remove the unused local variable "i".(ÒµÇ÷ûÿÿÿÿ
+lpython:S3776?"TRefactor this function to reduce its Cognitive Complexity from 20 to the 15 allowed.(™Û¹¨

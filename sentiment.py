@@ -11,6 +11,7 @@ from deep_translator import GoogleTranslator
 from textblob import TextBlob as tb
 import numpy as np
 import time
+import string
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('vader_lexicon')
@@ -69,7 +70,9 @@ def get_sentiment(keyword,n_tweets):
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
 
     tw_list['en_text'] = tw_list['text'].apply(lambda x: GoogleTranslator(source='auto', target='en').translate(x))
-    # create excel writer object
+    # remove punctuation
+    table = str.maketrans('', '', string.punctuation)
+    tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.translate(table) for x in x.split()]))
 
     logger.info("Getting polarity...")
     for tweet in tw_list['en_text']:

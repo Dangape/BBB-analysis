@@ -73,7 +73,7 @@ data['sentiment'] = data.apply(lambda x: get_sentiment(['{} #BBB22'.format(x.ali
 data['rt_follower'] = data['total_rts_5days']/data['followers_tt']
 data['likes_follower'] = data['total_likes_5days']/data['followers_tt']
 
-data['score'] = ((1.5*data['rt_mean_5days'] + data['like_mean_5days'])/data['followers_tt'])^data['sentiment']
+data['score'] = ((1.5*data['rt_mean_5days'] + data['like_mean_5days'])/data['followers_tt'])**data['sentiment']
 
 # create excel writer object
 dt_string = today.strftime("%Y_%m_%d")
