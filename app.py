@@ -27,7 +27,8 @@ newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
                 'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk']
+                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk','fazendo'
+                'estao','hoje','fazer','nessa']
 
 stopwords.extend(newStopWords)
 
@@ -58,11 +59,8 @@ def create_wc():
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
 
-    # logger.info("API created")
-
     keyword = '#BBB22 OR #bbb22'
     n_tweets = 1000
-
 
     tweet_list = []
 
@@ -100,6 +98,10 @@ def create_wc():
 
     # Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
+
+    #remove punctuation
+    table = str.maketrans('', '', string.punctuation)
+    tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.translate(table) for x in x.split()]))
 
     # create a wordcloud
     # logger.info("Generating WC")

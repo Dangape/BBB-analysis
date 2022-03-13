@@ -3,17 +3,14 @@ import pandas as pd
 import nltk
 import re
 from unidecode import unidecode
-from wordcloud import WordCloud
 from nltk.corpus import stopwords
-import logging
-import matplotlib.pyplot as plt
 import spacy
 import logging
 from config import create_api, remove_hashtag_and_mention
-from datetime import datetime
 from deep_translator import GoogleTranslator
 from textblob import TextBlob as tb
 import numpy as np
+import time
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('vader_lexicon')
@@ -36,7 +33,7 @@ newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https',
 stopwords.extend(newStopWords)
 tweet_list = {'text':[],'created_at':[]}
 
-def create_wc(keyword,n_tweets):
+def get_sentiment(keyword,n_tweets):
     score = []
     logger.info("Getting tweets")
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
@@ -81,9 +78,10 @@ def create_wc(keyword,n_tweets):
         score.append(polarity)
 
     logger.info("Success!!")
+    time.sleep(300)
     return np.mean(score)
 
-tw_list = create_wc('arthur #BBB22 #bbb22',500)
+# tw_list = get_sentiment(['arthur #BBB22','arthur #bbb22'],5)
 
 
 

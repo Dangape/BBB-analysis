@@ -10,10 +10,7 @@ import spacy
 import logging
 from config import create_api, remove_hashtag_and_mention
 from datetime import datetime
-import schedule
-import time
-from io import BytesIO
-import io
+import string
 
 nlp = spacy.load('en_core_web_sm')
 nltk.download('vader_lexicon')
@@ -69,6 +66,10 @@ def create_wc(keyword,n_tweets):
     #Remove stopwords
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.strip() for x in x.split() if x not in stopwords]))
 
+    #remove punctuation
+    table = str.maketrans('', '', string.punctuation)
+    tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.translate(table) for x in x.split()]))
+
     # create excel writer object
     writer = pd.ExcelWriter('output.xlsx')
     tw_list.to_excel(writer, engine='xlsxwriter')
@@ -89,4 +90,4 @@ def create_wc(keyword,n_tweets):
     plt.tight_layout(pad=0)
     plt.savefig('wordcloud.png')
 
-create_wc('#BBB22 OR #bbb22',1000)
+create_wc('#BBB22 OR #bbb22',5)

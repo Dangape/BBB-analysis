@@ -6,8 +6,10 @@ from datetime import datetime,timezone,timedelta
 import statistics
 import pytz
 import time
-import selenium
-from selenium import webdriver
+from sentiment import get_sentiment
+from io import StringIO # python3; python2: BytesIO
+import boto3
+import numpy as np
 
 
 
@@ -44,11 +46,14 @@ players_instagram = ['pedroscooby','arthuraguiar','iampauloandre','linndaquebrad
 
 players_names = ['Pedro Scooby', 'Arthur Aguiar', 'Paulo André','Linna','Lucas','Natalia','Jessi','Gustavo','Eslovênia','Vyni','Douglas','Lais','Eliezer']
 
+players_alias = ['scooby','arthur','pa','linna','lucas','nat','jessi','gustavo','eslo','vyni','dg','lais','eli']
+
 instagram_followers = [4092508,12248481,5290181,2565581,881134,2746130,1053104,751474,2069427,4119570,2799711,1168689,968241] #tentar automatizar
 
-data = pd.DataFrame(columns = ['user_insta','followers_insta','user_tt','followers_tt','total_likes_5days',
+data = pd.DataFrame(columns = ['alias','user_insta','followers_insta','user_tt','followers_tt','total_likes_5days',
                                'like_mean_5days','total_rts_5days','rt_mean_5days','sentiment','score','date'], index=players_names)
 
+data['alias'] = players_alias
 data['user_insta'] = players_instagram
 data['user_tt'] = players_twitter
 data['followers_insta'] = instagram_followers
@@ -61,13 +66,23 @@ data['rt_mean_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['mean_rts
 data['total_likes_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['total_likes'], axis = 1)
 data['total_rts_5days'] = data.apply(lambda x: count_rt_likes(x.user_tt)['total_rts'], axis = 1)
 
+
+data['sentiment'] = data.apply(lambda x: get_sentiment(['{} #BBB22'.format(x.alias),'{} #bbb22'.format(x.alias)], 500), axis=1)
+
 #new columns
 data['rt_follower'] = data['total_rts_5days']/data['followers_tt']
 data['likes_follower'] = data['total_likes_5days']/data['followers_tt']
 
+data['score'] = ((1.5*data['rt_mean_5days'] + data['like_mean_5days'])/data['followers_tt'])^data['sentiment']
+
 # create excel writer object
 dt_string = today.strftime("%Y_%m_%d")
 file_name = 'social_data_'+dt_string+'.xlsx'
-writer = pd.ExcelWriter(file_name)
-data.to_excel(writer, engine='xlsxwriter')
-writer.save()
+data.to_csv(file_name, sep=',')
+
+
+bucket = 'tweet-bot-data' # already created on S3
+csv_buffer = StringIO()
+data.to_csv(csv_buffer)
+s3_resource = boto3.resource('s3')
+s3_resource.Object(bucket, 'social_data/'+file_name+'.csv').put(Body=csv_buffer.getvalue())
