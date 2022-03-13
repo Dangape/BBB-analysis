@@ -83,11 +83,11 @@ def create_wc(keyword,n_tweets):
                    height=800,
                    contour_width=3,
                    contour_color='black',
-                   stopwords=stopwords).generate(str(tw_list['text'].values))
+                   stopwords=stopwords).generate(tw_list['text'].str.cat(sep=' '))
     plt.figure( figsize=(20,10), facecolor='k')
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
     plt.tight_layout(pad=0)
     plt.savefig('wordcloud.png')
 
-create_wc('#BBB22 OR #bbb22',5)
+create_wc('#BBB22 OR #bbb22',200)

@@ -46,7 +46,7 @@ players_instagram = ['pedroscooby','arthuraguiar','iampauloandre','linndaquebrad
 
 players_names = ['Pedro Scooby', 'Arthur Aguiar', 'Paulo André','Linna','Lucas','Natalia','Jessi','Gustavo','Eslovênia','Vyni','Douglas','Lais','Eliezer']
 
-players_alias = ['scooby','arthur','pa','linna','lucas','nat','jessi','gustavo','eslo','vyni','dg','lais','eli']
+players_alias = ['scooby','arthur','pa','lina','lucas','nat','jessi','gustavo','eslo','vyni','dg','lais','eli']
 
 instagram_followers = [4092508,12248481,5290181,2565581,881134,2746130,1053104,751474,2069427,4119570,2799711,1168689,968241] #tentar automatizar
 
@@ -73,7 +73,8 @@ data['sentiment'] = data.apply(lambda x: get_sentiment(['{} #BBB22'.format(x.ali
 data['rt_follower'] = data['total_rts_5days']/data['followers_tt']
 data['likes_follower'] = data['total_likes_5days']/data['followers_tt']
 
-data['score'] = ((1.5*data['rt_mean_5days'] + data['like_mean_5days'])/data['followers_tt'])**data['sentiment']
+#calculating score
+data['score'] = (1/(1.5*data['rt_follower'] + data['likes_follower']))**data['sentiment']
 
 # create excel writer object
 dt_string = today.strftime("%Y_%m_%d")

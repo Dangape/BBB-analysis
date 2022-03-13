@@ -27,8 +27,8 @@ newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
                 'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk','fazendo'
-                'estao','hoje','fazer','nessa']
+                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk',
+                'kkkk','kkkkk','kkkkkk','fazendo','estao','hoje','fazer','nessa','ainda','diz','pois']
 
 stopwords.extend(newStopWords)
 
@@ -111,7 +111,7 @@ def create_wc():
                    height=800,
                    contour_width=3,
                    contour_color='black',
-                   stopwords=stopwords).generate(str(tw_list['text'].values))
+                   stopwords=stopwords).generate(tw_list['text'].str.cat(sep=' '))
     plt.figure( figsize=(20 ,10), facecolor='k')
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
