@@ -1,12 +1,5 @@
 
 @
 requirements.txt,1\9\19359a61ae2446b51b549167b014da2fcf265768
-9
-	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
-:
-
-dockerfile,5\5\558c49b604560afd1841f2a7b49e2f60bd1f99b3
-9
-	config.py,1\a\1a1b9769344cb239f2e540e1e6ee1efa2d3034ea
 ;
 scraping.py,3\6\3673dc1126e67897ebd273340ad699e5ec1b8b9e

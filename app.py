@@ -13,6 +13,7 @@ import io
 import pytz
 import string
 import numpy as np
+from config import create_api, remove_hashtag_and_mention
 
 consumer_key = 'AxrLnGCzWymdqtyaGyuPps5oa'  # API key
 consumer_secret = 'dDZP1s8kCO5fg2yM3sVv60cFb0Zhmj0DT2cgh5ZneJDUEerhQM' # API key secret
@@ -58,7 +59,7 @@ def create_wc():
     # Authentication
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth)
+    api = tweepy.API(auth,wait_on_rate_limit=True)
 
     keyword = '#BBB22 OR #bbb22'
     n_tweets = 1000
@@ -72,7 +73,8 @@ def create_wc():
     # logger.info("Getting tweets")
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
         tweet_list.append(unidecode(tweet.full_text))
-    # #cleaning tweets
+
+    #cleaning tweets
     tw_list = pd.DataFrame(tweet_list)
     tw_list.drop_duplicates(inplace=True)
     tw_list['original'] = tw_list[0]
@@ -113,8 +115,7 @@ def create_wc():
                    '#forapa', '#forapauloandre', '#foradg', '#foradouglas', '#foradouglassilva', '#foraarthur',
                    '#forarrthur',
                    '#foralina', '#foralinn', '#foralinna', '#foralucas', '#forabarao', '#foranatalia', '#foragustavo',
-                   '#foralais',
-                   '#forascooby']
+                   '#foralais','#forascooby']
 
         for word in paredao:
             if word in row['original'].lower():
@@ -125,6 +126,9 @@ def create_wc():
     tw_list['paredao'] = tw_list.apply(lambda x: check_paredao(x), axis=1)
     tw_list['paredao'].fillna(' ', inplace=True)
     tw_list['text'] = tw_list['text'] + tw_list['paredao'].astype(str)
+
+    #treat similar names
+    tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([word.replace('viny','vyni') for word in x.split()]))
 
     # create a wordcloud
     # logger.info("Generating WC")

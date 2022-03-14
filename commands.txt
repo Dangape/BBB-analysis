@@ -1,13 +1,19 @@
+# Authenticate the Docker CLI to your Amazon ECR registry
+
+aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 439043003643.dkr.ecr.sa-east-1.amazonaws.com 
+
+
+# Build image
 docker build -t tweet-bot .
 docker run -p 9000:8080 tweet-bot
 
-Authenticate the Docker CLI to your Amazon ECR registry
-aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 439043003643.dkr.ecr.sa-east-1.amazonaws.com 
 
-Create a repository in Amazon ECR using the create-repository command.
+# Create a repository in Amazon ECR using the create-repository command.
 aws ecr create-repository --repository-name tweet-bot --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
 
-Tag your image to match your repository name, and deploy the image to Amazon ECR using the docker push command. 
+
+# Tag your image to match your repository name, and deploy the image to Amazon ECR using the docker push command. 
+
 docker tag  tweet-bot:latest 439043003643.dkr.ecr.sa-east-1.amazonaws.com/tweet-bot:latest
 docker push 439043003643.dkr.ecr.sa-east-1.amazonaws.com/tweet-bot:latest
 

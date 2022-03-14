@@ -17,7 +17,7 @@ def create_api():
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth)
+    api = tweepy.API(auth,wait_on_rate_limit=True)
     try:
         api.verify_credentials()
     except Exception as e:
@@ -38,4 +38,5 @@ def remove_hashtag_and_mention(text):
             if word[0] not in entity_prefixes:
                 words.append(word)
     return ' '.join(words)
+
 
