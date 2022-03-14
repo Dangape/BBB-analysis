@@ -1,11 +1,8 @@
 # tweepy-bots/bots/config.py
 import tweepy
 import logging
-import os
 import string
-import requests
-import re
-from bs4 import BeautifulSoup
+
 
 logger = logging.getLogger()
 
