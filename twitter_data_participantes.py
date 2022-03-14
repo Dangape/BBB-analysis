@@ -78,7 +78,7 @@ data['score'] = (1/(1.5*data['rt_follower'] + data['likes_follower']))**data['se
 
 # create excel writer object
 dt_string = today.strftime("%Y_%m_%d")
-file_name = 'social_data_'+dt_string+'.xlsx'
+file_name = 'social_data_'+dt_string
 data.to_csv(file_name, sep=',')
 
 
