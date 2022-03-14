@@ -4,12 +4,28 @@ import re
 from unidecode import unidecode
 from config import create_api, remove_hashtag_and_mention
 import numpy as np
+import nltk
 import string
 from datetime import datetime
 import pytz
 from io import StringIO
 import boto3
 import json
+
+nltk.data.path.append("/tmp")
+nltk.download('stopwords',download_dir = "/tmp")
+
+stopwords = nltk.corpus.stopwords.words('portuguese')
+newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https', 'BBB22', 'tá',
+                'dar', 'bbb22', 'te', 'eu', '#BBB22', 'HTTPS', 'pra', 'tbm', 'tb', 'tt', 'ja', 'nao',
+                '#bbb22', '#redebbb', 'bbb', 'ai', 'desse', 'quis', 'voce', 'vai', 'ta', '#bbb', 'ela', 'sobre',
+                'cada', 'ah', 'mas', 'mais','pro', 'dela', 'vem', 'ja', 'outra', 'porque',
+                'por que', 'por quê', 'porquê', 'bem', 'rt', 'todo','tao', 'acho', 'sao', 'voces', 'pq',
+                'co', 't', 'n', 'desde', 'so', 'mim', 'la', 'quer', 'fez', 'agora', 'aqui', 'vcs', 'gente', 'deu',
+                'ate', 'oq', 'ser', 'kkk', 'kk','kkkk', 'kkkkk', 'kkkkkk', 'kkkkkkkkk', 'kkkkk', 'kkkkkkk', 'kkkkkkkk',
+                'fazendo', 'estao', 'hoje','fazer', 'nessa', 'ainda', 'diz', 'pois', 'falando', 'disse', 'dessa', 'p', 'x']
+
+stopwords.extend(newStopWords)
 
 def handler(event, context):
     gather_data('#ForaScooby OR #ForaVyni OR #ForaViny OR #ForaGustavo OR #BBB22 OR #bbb22',1000)
