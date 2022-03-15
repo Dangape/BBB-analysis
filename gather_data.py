@@ -111,7 +111,7 @@ def gather_data(keyword,n_tweets):
         s3 = boto3.client('s3')
         obj = s3.get_object(Bucket=bucket, Key='social_data/' + file_name)
         actual_df = pd.read_csv(obj['Body'])
-        actual_df = pd.concat([actual_df,tw_list], axis=1)
+        actual_df = pd.concat([actual_df,tw_list])
         csv_buffer = StringIO()
         actual_df.to_csv(csv_buffer)
         s3_resource = boto3.resource('s3')
