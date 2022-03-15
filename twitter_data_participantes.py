@@ -5,7 +5,7 @@ from config import create_api
 from datetime import datetime,timezone,timedelta
 import statistics
 import pytz
-from io import StringIO # python3; python2: BytesIO
+from io import StringIO
 import boto3
 import json
 tz = pytz.timezone('America/Sao_Paulo')
