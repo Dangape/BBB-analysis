@@ -1,30 +1,31 @@
-# BBB-analysis
+# BBB-Bot on Twitter v1.0
+
+## Overview
+
+BBBot on Twitter is a personal project created just for study purpouses. The bot tweets informations about the participants from the biggest reallity show in Brazil: Big Brother Brazil (BBB).
+
+Follow the bot on Twitter: @bbbot_bot
+
+## Structure
+### Files
+
+- config.py -> get credentials and authenticate user with Twitter API using Tweepy;
+- app.py -> generate WordCloud and post on Twitter;
+- gather_data.py -> Every hour the code will scrap tweets about BBB and save the new data to a S3 bucket in AWS;
+- plot_paredao.py -> From Sunday through Tuesday, on specific times, this code will get tweets created in the last 6 hours and generate a plot indicating who the public wants to eliminate from the tv show;
+- twitter_data_participantes.py -> Every day, at 9h45 (America/São Paulo timezone), the code will collect data about engagement on participants' official Twitter profiles and generate a "Social Score"
+- social_plot -> Every day at 21h creates a plot with "Social Score" for each participant;
+    - Social Score calculation is specified in the code
+- Test_files folder -> contains codes that are currently not ready to run
+
 ## Install requirements
 
+To get all dependencies, run:
 ```
  pip install -r requirements.txt
 ```
 
-## Authenticate the Docker CLI to your Amazon ECR registry
-````angular2html
-aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 439043003643.dkr.ecr.sa-east-1.amazonaws.com
-````
-
-## Build image
-````angular2html
-docker build -t tweet-bot .
-docker run -p 9000:8080 tweet-bot
-````
-
-## Create a repository in Amazon ECR using the create-repository command.
-````angular2html
-aws ecr create-repository --repository-name tweet-bot --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE
-````
-
-## Tag your image to match your repository name, and deploy the image to Amazon ECR using the docker push command.
-
-````angular2html
-docker tag  tweet-bot:latest 439043003643.dkr.ecr.sa-east-1.amazonaws.com/tweet-bot:latest
-docker push 439043003643.dkr.ecr.sa-east-1.amazonaws.com/tweet-bot:latest
-````
-
+## Improvments for future verions
+[] Add sentiment analysis to social score
+[] Automate participants eliminations
+[] Predict elimination result based on recent tweets

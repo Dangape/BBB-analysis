@@ -13,7 +13,7 @@ import io
 import pytz
 import string
 import numpy as np
-from config import create_api, remove_hashtag_and_mention
+from config import create_api
 
 # logger = logging.getLogger()
 nltk.data.path.append("/tmp")

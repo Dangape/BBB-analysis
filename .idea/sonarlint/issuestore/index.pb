@@ -9,5 +9,12 @@
 my_first_bot.py,7\c\7cecae386341bb10cdba4a56d3698f8874a9c736
 M
 twitter_data_participantes.py,d\5\d5b48f80561c0bf913f120d8d4baed4ee505c4e0
->
-gather_data.py,d\6\d6be79cdc81636f43c5d156508638f906a0d37fb
+F
+dockerfile_gather_data,5\8\581aa96697721651d8c9a6225f06770f4a361fbc
+:
+
+dockerfile,5\5\558c49b604560afd1841f2a7b49e2f60bd1f99b3
+B
+dockerfile_paredao,2\4\245e93706bca2b5d2ff11db385063d57a1ce2161
+E
+dockerfile_engagement,c\b\cbe28225e730543ceb51c7bee4a7d2589fa57298

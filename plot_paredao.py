@@ -27,7 +27,6 @@ def create_paredao_plot():
                '#foragustavo', '#foralais', '#forascooby']
 
     # datetime object containing current date and tim
-
     tz = pytz.timezone('America/Sao_Paulo')
     ct = datetime.now(tz=tz)
     dt_string = ct.strftime("%d/%m/%Y %H:%M:%S")
@@ -101,7 +100,7 @@ def create_paredao_plot():
     # extra space between the text and the tick labels.
     ax.set_xlabel('Hashtags', labelpad=15, color='#333333')
     ax.set_ylabel('%', labelpad=15, color='#333333')
-    ax.set_title('Termômetro dos emparedados no twitter', pad=15, color='#333333',
+    ax.set_title('Termômetro dos emparedados no twitter (últimas 6h)', pad=15, color='#333333',
                  weight='bold')
     # plt.xticks(rotation=80)
 
