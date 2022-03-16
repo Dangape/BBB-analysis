@@ -21,8 +21,6 @@ def handler(event, context):
 
 def create_paredao_plot():
     api = create_api()
-    tweet_list = []
-
     paredao = ['#forajessi', '#foraeli', '#foraeliezer', '#foraeslo', '#foraeslovenia', '#foravyni', '#foraviny',
                '#forapa', '#forapauloandre', '#foradg', '#foradouglas', '#foradouglassilva', '#foraarthur',
                '#forarrthur','#foralina', '#foralinn', '#foralinna', '#foralucas', '#forabarao', '#foranatalia',
@@ -105,6 +103,7 @@ def create_paredao_plot():
     ax.set_ylabel('%', labelpad=15, color='#333333')
     ax.set_title('Termômetro dos emparedados no twitter', pad=15, color='#333333',
                  weight='bold')
+    # plt.xticks(rotation=80)
 
     # Make the chart fill out the figure better.
     fig.tight_layout()
@@ -114,7 +113,7 @@ def create_paredao_plot():
     plt.savefig(buf, format='png')
     buf.seek(0)
     # response = api.media_upload(filename="paredao", file=buf)
-
+    #
     # status = 'PAREDÃO BBB EM: ' + dt_string + ' #BBB22 #bbb22'
     # api.update_status(status=status, media_ids=[response.media_id_string])
 

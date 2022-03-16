@@ -41,3 +41,16 @@ docker tag tweet-bot-gather-data:latest 439043003643.dkr.ecr.sa-east-1.amazonaws
 docker push 439043003643.dkr.ecr.sa-east-1.amazonaws.com/tweet-bot-gather-data:latest
 
 
+-----------------------------------------------------
+
+# Build image (ENGAJAMENTO)
+docker build -f dockerfile_engagement -t tweet-bot-engajamento .
+docker run -p 9000:8080 tweet-bot-engajamento
+
+# Tag your image to match your repository name, and deploy the image to Amazon ECR using the docker push command. 
+
+docker tag tweet-bot-engajamento:latest 439043003643.dkr.ecr.sa-east-1.amazonaws.com/tweet-bot-engajamento:latest
+
+docker push 439043003643.dkr.ecr.sa-east-1.amazonaws.com/tweet-bot-engajamento:latest
+
+

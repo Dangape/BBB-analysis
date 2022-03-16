@@ -2,15 +2,19 @@
 import tweepy
 import logging
 import string
-
+import os
 
 logger = logging.getLogger()
 
 def create_api():
-    consumer_key = 'AxrLnGCzWymdqtyaGyuPps5oa' #API key
-    consumer_secret = 'dDZP1s8kCO5fg2yM3sVv60cFb0Zhmj0DT2cgh5ZneJDUEerhQM' #API key secret
-    access_token = '1460657321839890436-ZnRI0HMOYTVNpWh7j0QIM4m62G4qCo' #Access token
-    access_token_secret = 'janLV9AZyllBqORJJfltkegaeYISDNTbflUZZtCLWmgEB' #Access token secret
+    import json
+    with open('credentials.txt') as f:
+        json_data = json.load(f)
+
+    consumer_key = json_data['consumerKey'] #API key
+    consumer_secret = json_data['consumerSecret'] #API key secret
+    access_token = json_data['accessToken'] #Access token
+    access_token_secret = json_data['accessTokenSecret'] #Access token secret
 
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)

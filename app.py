@@ -15,11 +15,6 @@ import string
 import numpy as np
 from config import create_api, remove_hashtag_and_mention
 
-consumer_key = 'AxrLnGCzWymdqtyaGyuPps5oa'  # API key
-consumer_secret = 'dDZP1s8kCO5fg2yM3sVv60cFb0Zhmj0DT2cgh5ZneJDUEerhQM' # API key secret
-access_token = '1460657321839890436-ZnRI0HMOYTVNpWh7j0QIM4m62G4qCo'  # Access token
-access_token_secret ='janLV9AZyllBqORJJfltkegaeYISDNTbflUZZtCLWmgEB'  # Access token secret
-
 # logger = logging.getLogger()
 nltk.data.path.append("/tmp")
 nltk.download('stopwords',download_dir = "/tmp")
@@ -57,10 +52,7 @@ def remove_hashtag_and_mention(text):
 
 def create_wc():
     # Authentication
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth,wait_on_rate_limit=True)
-
+    api = create_api()
     keyword = '#BBB22 OR #bbb22'
     n_tweets = 1000
 
