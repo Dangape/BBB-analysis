@@ -53,29 +53,13 @@ def create_paredao_plot():
 
     df = read_s3_csv(bucket, file_path)
     df['created_at'] = df.apply(lambda x: convert_utc(x), axis=1)
-    # df.drop_duplicates(subset='original', keep="last",inplace=True)
-    # for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
-    #     tweet_list.append(unidecode(tweet.full_text))
-    #
-    # tw_list = pd.DataFrame(tweet_list)
-    # tw_list.drop_duplicates(inplace=True)
-    # tw_list['original'] = tw_list[0]
-    #
-    # def check_paredao(row):
-    #     for word in paredao:
-    #         if word in row['original'].lower():
-    #             return ' ' + word
-    #         else:
-    #             continue
-    #
-    # tw_list['paredao'] = tw_list.apply(lambda x: check_paredao(x), axis=1)
     df['paredao'].fillna('', inplace=True)
-    #
+
     # treat similar names
     df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('viny', 'vyni') for word in x.split()]))
     df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('eslovenia', 'eslo') for word in x.split()]))
 
-    print(df.created_at)
+    print(df.loc[:,['created_at','updated_at']])
     df = pd.DataFrame(df[df['paredao'] != '']['paredao'].value_counts(normalize=True).sort_values(ascending=False))
     df['paredao'] = df['paredao'] * 100
     df = df.iloc[:3, :]
