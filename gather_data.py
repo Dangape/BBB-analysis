@@ -28,7 +28,10 @@ newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https',
 stopwords.extend(newStopWords)
 
 def handler(event, context):
-    gather_data('#ForaScooby OR #ForaVyni OR #ForaViny OR #ForaGustavo OR #BBB22 OR #bbb22',1000)
+    gather_data('#ForaScooby OR #ForaVyni OR #ForaViny OR #ForaGustavo OR #BBB22 OR #bbb22 OR #forajessi OR '
+                '#foraeli OR #foraeliezer OR #foraeslo OR #foraeslovenia OR #foravyni OR #foraviny OR #forapa OR '
+                '#forapauloandre OR #foradg OR #foradouglas OR #foradouglassilva OR #foraarthur OR #forarrthur OR #foralina OR '
+                '#foralinn OR #foralinna OR #foralucas OR #forabarao OR #foranatalia OR #foragustavo OR #foralais OR #forascooby',800)
     return {
         'statusCode': 200,
         'body': json.dumps('Tweet with Success using AWS Lambda!')
@@ -112,6 +115,7 @@ def gather_data(keyword,n_tweets):
         obj = s3.get_object(Bucket=bucket, Key='social_data/' + file_name)
         actual_df = pd.read_csv(obj['Body'])
         actual_df = pd.concat([actual_df,tw_list])
+        actual_df.drop_duplicates(subset='original', keep="last", inplace=True)
         csv_buffer = StringIO()
         actual_df.to_csv(csv_buffer, index = False)
         s3_resource = boto3.resource('s3')

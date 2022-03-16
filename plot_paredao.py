@@ -8,16 +8,18 @@ from unidecode import unidecode
 import json
 import io
 import time
+import boto3
+from dateutil import tz as timezone
 
 start_time = time.time()
 def handler(event, context):
-    create_paredao_plot('#ForaScooby OR #ForaVyni OR #ForaViny OR #ForaGustavo',2000)
+    create_paredao_plot()
     return {
         'statusCode': 200,
         'body': json.dumps('Tweet with Success using AWS Lambda!')
     }
 
-def create_paredao_plot(keyword,n_tweets):
+def create_paredao_plot():
     api = create_api()
     tweet_list = []
 
@@ -26,39 +28,58 @@ def create_paredao_plot(keyword,n_tweets):
                '#forarrthur','#foralina', '#foralinn', '#foralinna', '#foralucas', '#forabarao', '#foranatalia',
                '#foragustavo', '#foralais', '#forascooby']
 
-    # datetime object containing current date and time
+    # datetime object containing current date and tim
+
     tz = pytz.timezone('America/Sao_Paulo')
     ct = datetime.now(tz=tz)
     dt_string = ct.strftime("%d/%m/%Y %H:%M:%S")
 
-    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
-        tweet_list.append(unidecode(tweet.full_text))
+    def convert_utc(row):
+        from_zone = timezone.gettz('UTC')
+        to_zone = timezone.gettz('America/Sao_Paulo')
+        utc = datetime.strptime( row['created_at'], "%d/%m/%Y %H:%M:%S")
+        utc = utc.replace(tzinfo=from_zone)
+        central = utc.astimezone(to_zone)
+        return  central.strftime("%d/%m/%Y %H:%M:%S")
 
-    tw_list = pd.DataFrame(tweet_list)
-    tw_list.drop_duplicates(inplace=True)
-    tw_list['original'] = tw_list[0]
+    def read_s3_csv(bucket, file_path):
+        s3 = boto3.client('s3')
+        obj = s3.get_object(Bucket=bucket, Key=file_path)
+        df = pd.read_csv(obj['Body'])
+        return df
 
-    def check_paredao(row):
-        for word in paredao:
-            if word in row['original'].lower():
-                return ' ' + word
-            else:
-                continue
+    bucket = 'tweet-bot-data'
+    file_path = 'social_data/paredao.csv'
 
-    tw_list['paredao'] = tw_list.apply(lambda x: check_paredao(x), axis=1)
-    tw_list['paredao'].fillna('', inplace=True)
-
-    # treat similar names
-    tw_list['paredao'] = tw_list['paredao'].apply(lambda x: ' '.join([word.replace('viny', 'vyni') for word in x.split()]))
+    df = read_s3_csv(bucket, file_path)
+    df['created_at'] = df.apply(lambda x: convert_utc(x), axis=1)
+    # df.drop_duplicates(subset='original', keep="last",inplace=True)
+    # for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
+    #     tweet_list.append(unidecode(tweet.full_text))
     #
-    # # create excel writer object
-    # tw_list.to_csv('output_paredao.csv', sep=',')
-    # tw_list = pd.read_csv('output_paredao.csv')
-    df = pd.DataFrame(tw_list[tw_list['paredao'] != '']['paredao'].value_counts(normalize=True).sort_values(ascending=False))
-    print(df)
+    # tw_list = pd.DataFrame(tweet_list)
+    # tw_list.drop_duplicates(inplace=True)
+    # tw_list['original'] = tw_list[0]
+    #
+    # def check_paredao(row):
+    #     for word in paredao:
+    #         if word in row['original'].lower():
+    #             return ' ' + word
+    #         else:
+    #             continue
+    #
+    # tw_list['paredao'] = tw_list.apply(lambda x: check_paredao(x), axis=1)
+    df['paredao'].fillna('', inplace=True)
+    #
+    # treat similar names
+    df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('viny', 'vyni') for word in x.split()]))
+    df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('eslovenia', 'eslo') for word in x.split()]))
+
+    print(df.created_at)
+    df = pd.DataFrame(df[df['paredao'] != '']['paredao'].value_counts(normalize=True).sort_values(ascending=False))
     df['paredao'] = df['paredao'] * 100
     df = df.iloc[:3, :]
-    print(df)
+    # print(df)
 
     plt.rcdefaults()
     fig, ax = plt.subplots()
@@ -103,16 +124,16 @@ def create_paredao_plot(keyword,n_tweets):
 
     # Make the chart fill out the figure better.
     fig.tight_layout()
-    # plt.savefig('paredao.png')
+    plt.savefig('paredao.png')
 
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
-    response = api.media_upload(filename="paredao", file=buf)
+    # response = api.media_upload(filename="paredao", file=buf)
 
-    status = 'PAREDÃO BBB EM: ' + dt_string + ' #BBB22 #bbb22'
-    api.update_status(status=status, media_ids=[response.media_id_string])
+    # status = 'PAREDÃO BBB EM: ' + dt_string + ' #BBB22 #bbb22'
+    # api.update_status(status=status, media_ids=[response.media_id_string])
 
-# create_paredao_plot('#ForaScooby OR #ForaVyni OR #ForaViny OR #ForaGustavo',50)
+create_paredao_plot()
 
 print("--- %s minutes ---" % ((time.time() - start_time)/60))

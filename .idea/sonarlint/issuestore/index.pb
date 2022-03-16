@@ -14,17 +14,9 @@ F
 dockerfile_gather_data,5\8\581aa96697721651d8c9a6225f06770f4a361fbc
 ?
 my_first_bot.py,7\c\7cecae386341bb10cdba4a56d3698f8874a9c736
-6
-app.py,1\3\13cce7fd076299c81b4986166f3d822791c9490e
 9
 	config.py,1\a\1a1b9769344cb239f2e540e1e6ee1efa2d3034ea
 E
 dockerfile_engagement,c\b\cbe28225e730543ceb51c7bee4a7d2589fa57298
-?
-plot_paredao.py,b\6\b61ede81186e6b8ad92e5001272d388841276a7d
 M
 twitter_data_participantes.py,d\5\d5b48f80561c0bf913f120d8d4baed4ee505c4e0
->
-gather_data.py,d\6\d6be79cdc81636f43c5d156508638f906a0d37fb
->
-social_plot.py,a\5\a5460af758a1a80d54a35e1a6b01f412367eda4b
