@@ -100,7 +100,7 @@ def create_paredao_plot():
     # extra space between the text and the tick labels.
     ax.set_xlabel('Hashtags', labelpad=15, color='#333333')
     ax.set_ylabel('%', labelpad=15, color='#333333')
-    ax.set_title('Termômetro dos emparedados no twitter', pad=15, color='#333333',
+    ax.set_title('Termômetro dos emparedados no twitter (últimas 6h)', pad=15, color='#333333',
                  weight='bold')
     # plt.xticks(rotation=80)
 
