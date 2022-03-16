@@ -12,7 +12,5 @@ F
 :
 
 dockerfile,5\5\558c49b604560afd1841f2a7b49e2f60bd1f99b3
-B
-dockerfile_paredao,2\4\245e93706bca2b5d2ff11db385063d57a1ce2161
 E
 dockerfile_engagement,c\b\cbe28225e730543ceb51c7bee4a7d2589fa57298

@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from config import create_api
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 import tweepy
 from unidecode import unidecode
 import json
@@ -37,7 +37,7 @@ def create_paredao_plot():
         utc = datetime.strptime( row['created_at'], "%d/%m/%Y %H:%M:%S")
         utc = utc.replace(tzinfo=from_zone)
         central = utc.astimezone(to_zone)
-        return  central.strftime("%d/%m/%Y %H:%M:%S")
+        return central.strftime("%d/%m/%Y %H:%M:%S")
 
     def read_s3_csv(bucket, file_path):
         s3 = boto3.client('s3')
@@ -56,18 +56,26 @@ def create_paredao_plot():
     df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('viny', 'vyni') for word in x.split()]))
     df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('eslovenia', 'eslo') for word in x.split()]))
 
-    print(df.loc[:,['created_at','updated_at']])
+    #Check time difference from now and tweet creation date
+    df['diff'] = ct - pd.to_datetime(df['created_at']).dt.tz_localize('America/Sao_Paulo')
+    df = df[df['diff'] <= timedelta(hours=6)] #filter tweets 6h earlier
+
     df = pd.DataFrame(df[df['paredao'] != '']['paredao'].value_counts(normalize=True).sort_values(ascending=False))
+    others =  (1 - sum(df.iloc[:3, 0]))*100
     df['paredao'] = df['paredao'] * 100
     df = df.iloc[:3, :]
-    # print(df)
+    df.loc['outros'] = others
 
     plt.rcdefaults()
+    plt.rcParams['axes.edgecolor'] = '#333F4B'
+    plt.rcParams['axes.linewidth'] = 0.8
+    plt.rcParams['xtick.color'] = '#333F4B'
+    plt.rcParams['ytick.color'] = '#333F4B'
     fig, ax = plt.subplots()
     bars = ax.bar(
         x=df.index,
         height=df.paredao,
-        tick_label=df.index)
+        tick_label=df.index,color='#007acc', alpha=0.5, linewidth=5)
 
     # Axis formatting.
     ax.spines['top'].set_visible(False)
@@ -100,21 +108,21 @@ def create_paredao_plot():
     # extra space between the text and the tick labels.
     ax.set_xlabel('Hashtags', labelpad=15, color='#333333')
     ax.set_ylabel('%', labelpad=15, color='#333333')
-    ax.set_title('Termômetro dos emparedados no twitter (últimas 6h)', pad=15, color='#333333',
+    ax.set_title('Três maiores rejeições no Twitter (últimas 6h)', pad=15, color='#333333',
                  weight='bold')
     # plt.xticks(rotation=80)
 
     # Make the chart fill out the figure better.
     fig.tight_layout()
-    plt.savefig('paredao.png')
+    # plt.savefig('paredao.png')
 
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
-    # response = api.media_upload(filename="paredao", file=buf)
-    #
-    # status = 'PAREDÃO BBB EM: ' + dt_string + ' #BBB22 #bbb22'
-    # api.update_status(status=status, media_ids=[response.media_id_string])
+    response = api.media_upload(filename="paredao", file=buf)
+
+    status = 'PAREDÃO BBB EM: ' + dt_string + ' #BBB22 #bbb22'
+    api.update_status(status=status, media_ids=[response.media_id_string])
 
 create_paredao_plot()
 
