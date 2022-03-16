@@ -3,4 +3,5 @@ scooby.xlsx
 scooby.xlsx
 *.xlsx
 *.xlsx
-*.txt
+credentials.txt
+commands.txt
