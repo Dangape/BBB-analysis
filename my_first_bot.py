@@ -1,3 +1,4 @@
+import numpy as np
 import tweepy
 import pandas as pd
 import nltk
@@ -24,7 +25,8 @@ newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
                 'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk']
+                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk',
+                'kkkk','kkkkk','kkkkkk','kkkkkkkkk','kkkkk','kkkkkkk','kkkkkkkk']
 
 stopwords.extend(newStopWords)
 tweet_list = []
@@ -70,6 +72,27 @@ def create_wc(keyword,n_tweets):
     table = str.maketrans('', '', string.punctuation)
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.translate(table) for x in x.split()]))
 
+    #check paredao hashtags
+    tw_list['paredao'] = np.nan
+    tw_list['paredao'] = tw_list['paredao'].fillna(' ')
+    def check_paredao(row):
+        paredao = ['#forajessi', '#foraeli', '#foraeliezer', '#foraeslo', '#foraeslovenia', '#foravyni', '#foraviny',
+                   '#forapa', '#forapauloandre', '#foradg', '#foradouglas', '#foradouglassilva', '#foraarthur', '#forarrthur',
+                   '#foralina', '#foralinn', '#foralinna', '#foralucas', '#forabarao', '#foranatalia', '#foragustavo', '#foralais',
+                   '#forascooby']
+
+        for word in paredao:
+            if word in row['original'].lower():
+                return ' ' + word
+            else:
+                continue
+
+    tw_list['paredao'] = tw_list.apply(lambda x: check_paredao(x), axis=1)
+    tw_list['paredao'].fillna(' ',inplace=True)
+    tw_list['text'] = tw_list['text'] + tw_list['paredao'].astype(str)
+
+
+
     # create excel writer object
     writer = pd.ExcelWriter('output.xlsx')
     tw_list.to_excel(writer, engine='xlsxwriter')
@@ -83,11 +106,11 @@ def create_wc(keyword,n_tweets):
                    height=800,
                    contour_width=3,
                    contour_color='black',
-                   stopwords=stopwords).generate(str(tw_list['text'].values))
+                   stopwords=stopwords).generate(tw_list['text'].str.cat(sep=' '))
     plt.figure( figsize=(20,10), facecolor='k')
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
     plt.tight_layout(pad=0)
     plt.savefig('wordcloud.png')
 
-create_wc('#BBB22 OR #bbb22',5)
+create_wc('#BBB22 OR #bbb22',500)

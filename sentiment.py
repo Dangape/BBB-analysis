@@ -20,7 +20,6 @@ logger = logging.getLogger()
 
 api = create_api()
 
-
 stopwords = nltk.corpus.stopwords.words('portuguese')
 newStopWords = ['né', 'Se', 'q', 'vc', 'ter', 'ne', 'da', 'to', 'tô', 'https', 'BBB22', 'tá',
                 'dar', 'bbb22', 'te', 'eu', '#BBB22', 'HTTPS', 'pra', 'tbm', 'tb', 'tt', 'ja', 'nao',

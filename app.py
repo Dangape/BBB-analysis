@@ -12,11 +12,8 @@ import pandas as pd
 import io
 import pytz
 import string
-
-consumer_key = 'AxrLnGCzWymdqtyaGyuPps5oa'  # API key
-consumer_secret = 'dDZP1s8kCO5fg2yM3sVv60cFb0Zhmj0DT2cgh5ZneJDUEerhQM' # API key secret
-access_token = '1460657321839890436-ZnRI0HMOYTVNpWh7j0QIM4m62G4qCo'  # Access token
-access_token_secret ='janLV9AZyllBqORJJfltkegaeYISDNTbflUZZtCLWmgEB'  # Access token secret
+import numpy as np
+from config import create_api, remove_hashtag_and_mention
 
 # logger = logging.getLogger()
 nltk.data.path.append("/tmp")
@@ -27,8 +24,8 @@ newStopWords = ['né','Se','q','vc','ter','ne','da','to','tô','https','BBB22','
                 'dar','bbb22','te','eu','#BBB22','HTTPS','pra','tbm','tb','tt','ja','nao',
                 '#bbb22','#redebbb','bbb','ai','desse','quis','voce','vai','ta','#bbb','ela','sobre','cada','ah','mas','mais',
                 'pro','dela','vem','ja','outra','porque','por que','por quê','porquê','bem','rt','todo','tao','acho','sao','voces','pq',
-                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk','kkkk','kkkkk','kkkkkk','fazendo'
-                'estao','hoje','fazer','nessa']
+                'co','t','n','desde','so','mim','la','quer','fez','agora','aqui','vcs','gente','deu', 'ate', 'oq', 'ser', 'kkk','kk',
+                'kkkk','kkkkk','kkkkkk','kkkkkkkkk','kkkkk','kkkkkkk','kkkkkkkk','fazendo','estao','hoje','fazer','nessa','ainda','diz','pois','falando','disse','dessa','p','x']
 
 stopwords.extend(newStopWords)
 
@@ -42,7 +39,7 @@ def handler(event, context):
 
 def remove_hashtag_and_mention(text):
     entity_prefixes = ['@','#']
-    for separator in  string.punctuation:
+    for separator in string.punctuation:
         if separator not in entity_prefixes :
             text = text.replace(separator,' ')
     words = []
@@ -55,10 +52,7 @@ def remove_hashtag_and_mention(text):
 
 def create_wc():
     # Authentication
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth)
-
+    api = create_api()
     keyword = '#BBB22 OR #bbb22'
     n_tweets = 1000
 
@@ -71,7 +65,8 @@ def create_wc():
     # logger.info("Getting tweets")
     for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang='pt',tweet_mode="extended").items(n_tweets):
         tweet_list.append(unidecode(tweet.full_text))
-    # #cleaning tweets
+
+    #cleaning tweets
     tw_list = pd.DataFrame(tweet_list)
     tw_list.drop_duplicates(inplace=True)
     tw_list['original'] = tw_list[0]
@@ -103,6 +98,30 @@ def create_wc():
     table = str.maketrans('', '', string.punctuation)
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.translate(table) for x in x.split()]))
 
+    # check paredao hashtags
+    tw_list['paredao'] = np.nan
+    tw_list['paredao'] = tw_list['paredao'].fillna(' ')
+
+    def check_paredao(row):
+        paredao = ['#forajessi', '#foraeli', '#foraeliezer', '#foraeslo', '#foraeslovenia', '#foravyni', '#foraviny',
+                   '#forapa', '#forapauloandre', '#foradg', '#foradouglas', '#foradouglassilva', '#foraarthur',
+                   '#forarrthur',
+                   '#foralina', '#foralinn', '#foralinna', '#foralucas', '#forabarao', '#foranatalia', '#foragustavo',
+                   '#foralais','#forascooby']
+
+        for word in paredao:
+            if word in row['original'].lower():
+                return ' ' + word
+            else:
+                continue
+
+    tw_list['paredao'] = tw_list.apply(lambda x: check_paredao(x), axis=1)
+    tw_list['paredao'].fillna(' ', inplace=True)
+    tw_list['text'] = tw_list['text'] + tw_list['paredao'].astype(str)
+
+    #treat similar names
+    tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([word.replace('viny','vyni') for word in x.split()]))
+
     # create a wordcloud
     # logger.info("Generating WC")
     wc = WordCloud(background_color='white',
@@ -111,7 +130,7 @@ def create_wc():
                    height=800,
                    contour_width=3,
                    contour_color='black',
-                   stopwords=stopwords).generate(str(tw_list['text'].values))
+                   stopwords=stopwords).generate(tw_list['text'].str.cat(sep=' '))
     plt.figure( figsize=(20 ,10), facecolor='k')
     plt.imshow(wc, interpolation="bilinear")
     plt.axis("off")
