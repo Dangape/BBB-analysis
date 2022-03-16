@@ -27,7 +27,6 @@ def create_paredao_plot():
                '#foragustavo', '#foralais', '#forascooby']
 
     # datetime object containing current date and tim
-
     tz = pytz.timezone('America/Sao_Paulo')
     ct = datetime.now(tz=tz)
     dt_string = ct.strftime("%d/%m/%Y %H:%M:%S")
