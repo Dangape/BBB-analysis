@@ -43,7 +43,8 @@ def engagement_plot():
     palette_dict = {continent: color for continent, color in zip(participantes, palette)}
 
     #Barplot
-    sns.set(rc={"figure.figsize":(15, 8)})
+    fig1 = plt.figure(figsize=(15, 8))
+    # sns.set(rc={"figure.figsize":(15, 8)})
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     sns.barplot(data=df[df['date']==dt_string].sort_values(by='score',ascending=False),
@@ -57,15 +58,14 @@ def engagement_plot():
     buf1 = io.BytesIO()
     plt.savefig(buf1, format='png')
     buf1.seek(0)
-    plt.show()
+    # plt.show()
 
     #lineplot
-    # fig, ax = plt.subplots()
-    sns.set(rc={"figure.figsize":(15, 8)})
+    fig2 = plt.figure(figsize=(15, 8))
+    # sns.set(rc={"figure.figsize":(15, 8)})
     sns.set(font_scale=1.5)
     sns.set_style("white")
-    sns.axes_style("ticks")
-    ax = sns.lineplot(
+    sns.lineplot(
         data=df,
         x="format_date", y="score", hue="alias",marker='o', linewidth=2.0,palette=palette_dict).\
         set(title="Histórico de Engajamento no Twitter",ylabel="Score",
@@ -85,3 +85,5 @@ def engagement_plot():
 
     status = 'Engajamento dos perfis oficiais dos participantes do BBB em: ' + dt_string + ' #BBB22 #bbb22'
     api.update_status(status=status, media_ids=[response1.media_id_string,response2.media_id_string])
+
+# engagement_plot()
