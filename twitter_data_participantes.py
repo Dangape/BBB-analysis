@@ -68,7 +68,7 @@ def generate_engagement():
     #calculating score
     data['score'] = (data['like_mean_5days'] +
                      1.5*data['rt_mean_3days'])*\
-                    (1+((data['total_likes_5days']+1.5*data['total_rts_3days'])/data['followers_tt']))
+                    (1+(1/data['followers_tt']))
 
     # check files already in bucket
     s3 = boto3.resource('s3')

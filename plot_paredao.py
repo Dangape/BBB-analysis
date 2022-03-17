@@ -3,8 +3,6 @@ import matplotlib.pyplot as plt
 from config import create_api
 import pytz
 from datetime import datetime, timedelta
-import tweepy
-from unidecode import unidecode
 import json
 import io
 import time
@@ -121,9 +119,9 @@ def create_paredao_plot():
     buf.seek(0)
     response = api.media_upload(filename="paredao", file=buf)
 
-    status = 'PAREDÃO BBB EM: ' + dt_string + ' #BBB22 #bbb22'
+    status = 'Três maiores rejeições BBB em: ' + dt_string + ' #BBB22 #bbb22'
     api.update_status(status=status, media_ids=[response.media_id_string])
 
-create_paredao_plot()
+# create_paredao_plot()
 
 print("--- %s minutes ---" % ((time.time() - start_time)/60))
