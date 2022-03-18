@@ -53,7 +53,7 @@ def remove_hashtag_and_mention(text):
 def create_wc():
     # Authentication
     api = create_api()
-    keyword = '#BBB22 OR #bbb22'
+    keyword = '#BBB22 OR #RedeBBB'
     n_tweets = 1000
 
     tweet_list = []
@@ -140,7 +140,7 @@ def create_wc():
     buf.seek(0)
     response = api.media_upload(filename="wordcloud", file=buf)
 
-    status = 'BBB EM: ' + dt_string + ' #BBB22 #bbb22'
+    status = 'BBB EM: ' + dt_string + ' #BBB22 #RedeBBB'
     api.update_status(status = status ,media_ids=[response.media_id_string])
 
 
