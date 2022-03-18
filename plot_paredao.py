@@ -119,7 +119,7 @@ def create_paredao_plot():
     buf.seek(0)
     response = api.media_upload(filename="paredao", file=buf)
 
-    status = 'Três maiores rejeições BBB em: ' + dt_string + ' #BBB22 #bbb22'
+    status = 'Três maiores rejeições BBB em: ' + dt_string + ' #BBB22 #RedeBBB'
     api.update_status(status=status, media_ids=[response.media_id_string])
 
 # create_paredao_plot()

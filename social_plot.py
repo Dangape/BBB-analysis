@@ -29,7 +29,8 @@ def engagement_plot():
 
     tz = pytz.timezone('America/Sao_Paulo')
     today = datetime.now(tz=tz)
-    dt_string = today.strftime("%Y-%m-%d")
+    dt_string = today.strftime("%d/%m/%Y %H:%M:%S")
+
 
     df = read_s3_csv(bucket,file_path)
     df = df[df['alias'] != 'vyni'] #eliminado
@@ -83,7 +84,7 @@ def engagement_plot():
     response1 = api.media_upload(filename="bar_plot", file=buf1)
     response2 = api.media_upload(filename="line_plot", file=buf2)
 
-    status = 'Engajamento dos perfis oficiais dos participantes do BBB em: ' + dt_string + ' #BBB22 #bbb22'
+    status = 'Engajamento dos perfis oficiais dos participantes do BBB em: ' + dt_string + ' #BBB22 #RedeBBB'
     api.update_status(status=status, media_ids=[response1.media_id_string,response2.media_id_string])
 
 # engagement_plot()
