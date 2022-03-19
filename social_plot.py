@@ -37,7 +37,7 @@ def engagement_plot():
     df['score'] = df['score']/100
 
     df['format_date'] = pd.to_datetime(df['date']).dt.strftime('%d/%m')
-
+    # print(df[df['format_date']==today.strftime("%d/%m")].sort_values(by='score',ascending=False))
     api = create_api()
     participantes = np.unique(df['alias'])
     palette = sns.color_palette('Paired',n_colors=len(np.unique(df.alias)))
@@ -45,10 +45,11 @@ def engagement_plot():
 
     #Barplot
     fig1 = plt.figure(figsize=(15, 8))
+    df_today = df[df['format_date']==today.strftime("%d/%m")].sort_values(by='score',ascending=False)
     # sns.set(rc={"figure.figsize":(15, 8)})
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
-    sns.barplot(data=df[df['date']==dt_string].sort_values(by='score',ascending=False),
+    sns.barplot(data=df_today,
                 x='alias',y='score',ci=None,palette=palette_dict)\
         .set(title="Score de engajamento no Twitter",ylabel="Score",xlabel=None)
     sns.despine()

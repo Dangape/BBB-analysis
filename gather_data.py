@@ -2,7 +2,7 @@ import tweepy
 import pandas as pd
 import re
 from unidecode import unidecode
-from config import create_api, remove_hashtag_and_mention
+from config import create_api
 import numpy as np
 import nltk
 import string
@@ -29,7 +29,7 @@ stopwords.extend(newStopWords)
 
 def handler(event, context):
     gather_data('#ForaScooby OR #ForaVyni OR #ForaViny OR #ForaGustavo OR #BBB22 OR #bbb22 OR #forajessi OR '
-                '#foraeli OR #foraeliezer OR #foraeslo OR #foraeslovenia OR #foravyni OR #foraviny OR #forapa OR '
+                '#foraeli OR #foraeliezer OR #foraeslo OR #foraeslovenia OR #forapa OR '
                 '#forapauloandre OR #foradg OR #foradouglas OR #foradouglassilva OR #foraarthur OR #forarrthur OR #foralina OR '
                 '#foralinn OR #foralinna OR #foralucas OR #forabarao OR #foranatalia OR #foragustavo OR #foralais OR #forascooby',800)
     return {
@@ -39,6 +39,21 @@ def handler(event, context):
 
 def gather_data(keyword,n_tweets):
     api = create_api()
+
+    def remove_hashtag_and_mention(text):
+        entity_prefixes = ['@', '#']
+        for separator in string.punctuation:
+            if separator not in entity_prefixes:
+                text = text.replace(separator, ' ')
+        words = []
+        for word in text.split():
+            word = word.strip()
+            if word:
+                if word[0] not in entity_prefixes:
+                    words.append(word)
+        return ' '.join(words)
+
+
     tweet_list = {'text':[],'created_at':[],'updated_at':[]}
     paredao = ['#forajessi', '#foraeli', '#foraeliezer', '#foraeslo', '#foraeslovenia', '#foravyni', '#foraviny',
                '#forapa', '#forapauloandre', '#foradg', '#foradouglas', '#foradouglassilva', '#foraarthur',
@@ -87,11 +102,13 @@ def gather_data(keyword,n_tweets):
     tw_list['text'] = tw_list['text'].apply(lambda x: ' '.join([x.translate(table) for x in x.split()]))
 
     def check_paredao(row):
+        l = []
         for word in paredao:
             if word in row['original'].lower():
-                return ' ' + word
+                l.append(word)
             else:
                 continue
+        return ';'.join(l)
 
     tw_list['paredao'] = tw_list.apply(lambda x: check_paredao(x), axis=1)
     tw_list['paredao'].fillna(' ', inplace=True)
