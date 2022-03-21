@@ -51,8 +51,8 @@ def engagement_plot():
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     sns.barplot(data=df_today,
-                x='alias',y='score',ci=None,palette=palette_dict)\
-        .set(title="Score de engajamento no Twitter",ylabel="Score",xlabel=None)
+                x=None,y='pontuação',ci=None,palette=palette_dict)\
+        .set(title="Pontuação de engajamento no Twitter + Instagram",ylabel="Score",xlabel=None)
     sns.despine()
     plt.title('Engajamento nos Últimos 2 Dias (Twitter + Instagram) - Referência: {}'.format(datetime.now(tz=tz).strftime("%d/%m")))
     plt.tight_layout()
@@ -81,12 +81,12 @@ def engagement_plot():
     buf2 = io.BytesIO()
     plt.savefig(buf2, format='png')
     buf2.seek(0)
-    plt.show()
+    # plt.show()
 
-    # response1 = api.media_upload(filename="bar_plot", file=buf1)
-    # response2 = api.media_upload(filename="line_plot", file=buf2)
-    #
-    # status = 'Engajamento dos perfis oficiais dos participantes do BBB em: ' + dt_string + ' #BBB22 #RedeBBB'
-    # api.update_status(status=status, media_ids=[response1.media_id_string,response2.media_id_string])
+    response1 = api.media_upload(filename="bar_plot", file=buf1)
+    response2 = api.media_upload(filename="line_plot", file=buf2)
 
-engagement_plot()
+    status = 'Engajamento dos perfis oficiais dos participantes do BBB no Twitter e no Instagram em: ' + dt_string + ' #BBB22 #RedeBBB'
+    api.update_status(status=status, media_ids=[response1.media_id_string,response2.media_id_string])
+
+# engagement_plot()
