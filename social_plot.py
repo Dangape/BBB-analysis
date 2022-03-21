@@ -31,8 +31,12 @@ def engagement_plot():
     today = datetime.now(tz=tz)
     dt_string = today.strftime("%d/%m/%Y %H:%M:%S")
 
+    d = {'pa':'PA','scooby':'Scooby','dg':'DG','gustavo':'Gustavo','jessi':'Jessi',
+         'lais':'Laís','arthur':'Arthur','nat':'Natália','lina':'Lina','eslo':'Eslovênia','eli':'Eliezer','lucas':'Lucas'}
 
     df = read_s3_csv(bucket,file_path)
+    df.replace({'alias':d},inplace=True)
+    df['total_followers_milhao'] = (df['followers_insta'] + df['followers_tt'])/1000000
     print(df)
     df = df[df['alias'] != 'vyni'] #eliminado
     # df['score'] = df['score']/100
@@ -47,14 +51,23 @@ def engagement_plot():
     #Barplot
     fig1 = plt.figure(figsize=(15, 8))
     df_today = df[df['date']==today.strftime("%d/%m")].sort_values(by='score',ascending=False)
+    print(df_today.columns)
     # sns.set(rc={"figure.figsize":(15, 8)})
     sns.set(font_scale=1.5)
     sns.set_style("whitegrid")
     sns.barplot(data=df_today,
-                x=None,y='pontuação',ci=None,palette=palette_dict)\
+                x='alias',y='score',ci=None,palette=palette_dict,alpha=0.9)\
         .set(title="Pontuação de engajamento no Twitter + Instagram",ylabel="Score",xlabel=None)
+    plt.title('Engajamento por seguidor nos Últimos 2 Dias (Twitter + Instagram) - Referência: {}'.format(
+        datetime.now(tz=tz).strftime("%d/%m")))
     sns.despine()
-    plt.title('Engajamento nos Últimos 2 Dias (Twitter + Instagram) - Referência: {}'.format(datetime.now(tz=tz).strftime("%d/%m")))
+
+    ax2 = plt.twinx()
+    ax2.set_ylabel('Total de Seguidores (milhão)')
+    ax2.grid(False)
+    sns.set_style("white")
+    sns.lineplot(data=df_today, x='alias', y='total_followers_milhao', marker='o', linewidth=2.0, ax=ax2,color='red')
+    # plt.title('Engajamento nos Últimos 2 Dias (Twitter + Instagram) - Referência: {}'.format(datetime.now(tz=tz).strftime("%d/%m")))
     plt.tight_layout()
 
     #Save barplot

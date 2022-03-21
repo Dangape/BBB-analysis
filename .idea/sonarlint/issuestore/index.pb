@@ -17,7 +17,3 @@ L
 social_data_participantes.py,f\0\f0197515ea379d46e8ee631a55e7d87b98d4346c
 6
 app.py,1\3\13cce7fd076299c81b4986166f3d822791c9490e
->
-social_plot.py,a\5\a5460af758a1a80d54a35e1a6b01f412367eda4b
-M
-Test_files/data_playground.py,4\7\47682021d0766f0f6912f1ff3c8883254b651b6e
