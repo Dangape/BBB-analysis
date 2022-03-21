@@ -9,7 +9,9 @@ import base64
 import requests
 import hmac
 import json
-
+from bs4 import BeautifulSoup
+import re
+import instagramy
 
 # def read_s3_csv(bucket, file_path):
 #     s3 = boto3.client('s3')
@@ -44,3 +46,30 @@ import json
 # writer = pd.ExcelWriter('tweets_data.xlsx')
 # df.to_excel(writer)
 # writer.save()
+
+social_data = pd.read_csv('social_data.csv')
+# fh= pd.read_csv('followers_history.csv',sep=';')
+
+social_data['date'] = pd.to_datetime(social_data['date']).dt.strftime('%d/%m')
+players_instagram = ['pedroscooby','arthuraguiar','iampauloandre','linndaquebrada','bissolilucas','natalia.deodato',
+                     'jessilane','gustavo_marsengo','eslomarques','douglassilva','dra.laiscaldass','eliezer']
+
+# Connecting the profile
+session_id = "52422948190:3Z9eMGzKFWzeNY:1"
+df = pd.DataFrame(columns=['user_insta','likes_insta', 'comments_insta', 'date', 'followers'])
+
+for player in players_instagram:
+    user = instagramy.InstagramUser(player,sessionid=session_id)
+    n_followers = user.number_of_followers
+    posts = user.posts
+    listdict = []
+    for post in posts:
+        listdict.append({'user_insta': player, 'likes_insta':post.likes, 'comments_insta':post.comments,
+                         'date':post.taken_at_timestamp.strftime("%d/%m")})
+    df = df.append(listdict, ignore_index=True)
+
+social_data = pd.merge(social_data,df.groupby(by=['user_insta','date'],as_index=False).agg({'likes_insta':'sum','comments_insta':'sum'}),on=['user_insta','date'],how='left')
+
+writer = pd.ExcelWriter('social_insta.xlsx')
+social_data.to_excel(writer)
+writer.save()
