@@ -53,12 +53,19 @@ def create_paredao_plot():
     # treat similar names
     df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('viny', 'vyni') for word in x.split()]))
     df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('eslovenia', 'eslo') for word in x.split()]))
+    df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('linn', 'lina') for word in x.split()]))
+    df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('linaa', 'lina') for word in x.split()]))
+    df['paredao'] = df['paredao'].apply(lambda x: ' '.join([word.replace('eliezer', 'eli') for word in x.split()]))
 
     #Check time difference from now and tweet creation date
     df['diff'] = ct - pd.to_datetime(df['created_at']).dt.tz_localize('America/Sao_Paulo')
-    df = df[df['diff'] <= timedelta(hours=6)] #filter tweets 6h earlier
+    df = df[df['diff'] <= timedelta(hours=12)] #filter tweets 6h earlier
 
-    df = pd.DataFrame(df[df['paredao'] != '']['paredao'].value_counts(normalize=True).sort_values(ascending=False))
+    df['paredao'] = df['paredao'].apply(lambda x: x.replace(';',','))
+    l = list(df[df['paredao'] != '']['paredao'].str.split(','))
+    l = pd.Series([item for sublist in l for item in sublist])
+
+    df = pd.DataFrame(l.value_counts(normalize=True).sort_values(ascending=False),columns=['paredao'])
     others =  (1 - sum(df.iloc[:3, 0]))*100
     df['paredao'] = df['paredao'] * 100
     df = df.iloc[:3, :]
@@ -106,7 +113,7 @@ def create_paredao_plot():
     # extra space between the text and the tick labels.
     ax.set_xlabel('Hashtags', labelpad=15, color='#333333')
     ax.set_ylabel('%', labelpad=15, color='#333333')
-    ax.set_title('Três maiores rejeições no Twitter (últimas 6h)', pad=15, color='#333333',
+    ax.set_title('Três maiores rejeições no Twitter (últimas 12h)', pad=15, color='#333333',
                  weight='bold')
     # plt.xticks(rotation=80)
 

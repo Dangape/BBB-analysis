@@ -1,2 +1,4 @@
 
-lpython:S1192q"MDefine a constant instead of duplicating this literal 'social_data/' 4 times.(¼Ï™ÿ8û’øĞø/
+mpython:S1192‚"MDefine a constant instead of duplicating this literal 'social_data/' 4 times.(¼Ï™ÿ8û’øĞø/
+Npython:S10664"/Merge this if statement with the enclosing one.(ßòÃÅ8É½İöù/
+spython:S3776("TRefactor this function to reduce its Cognitive Complexity from 24 to the 15 allowed.(—†Ó8Ê½İöù/
