@@ -1,4 +1,4 @@
-# BBB-Bot on Twitter v1.0
+# BBB-Bot on Twitter v1.1 (22/03/2022)
 
 ## Overview
 
