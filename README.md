@@ -27,7 +27,7 @@ To get all dependencies, run:
  pip install -r requirements.txt
 ```
 
-## Improvments for future verions
+## Improvements for future verions
 - [ ] Add sentiment analysis to social score
 - [ ] Automate participants eliminations
 - [ ] Predict elimination result based on recent tweets
