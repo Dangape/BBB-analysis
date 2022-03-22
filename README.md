@@ -15,7 +15,7 @@ All the project is automated and running in AWS
 - *app.py* -> generate WordCloud and post on Twitter;
 - *gather_data.py* -> Every hour the code will scrap tweets about BBB and save the new data to a S3 bucket in AWS;
 - *plot_paredao.py* -> From Sunday through Tuesday, on specific times, this code will get tweets created in the last 6 hours and generate a plot indicating who the public wants to eliminate from the tv show;
-- *twitter_data_participantes.py* -> Every day, at 9h45 (America/São Paulo timezone), the code will collect data about engagement on participants' official Twitter profiles and generate a "Social Score"
+- *social_data_participantes.py* -> Every day, at 4h00 AM (America/São Paulo timezone), the code will collect data about engagement on participants' official Twitter and Instagram profiles and generate a "Social Engagement Score"
 - *social_plot* -> Every day at 21h (America/São Paulo timezone) creates a plot with "Social Score" for each participant;
     - Social Score calculation is specified in the code
 - *Test_files folder* -> contains codes that are currently not ready to run
@@ -31,3 +31,10 @@ To get all dependencies, run:
 - [ ] Add sentiment analysis to social score
 - [ ] Automate participants eliminations
 - [ ] Predict elimination result based on recent tweets
+
+## Changelogs
+### V1.1
+- Added Instagram data on social plot
+- Removed wordcloud post from 16h30
+- Changed social engagement calculus
+- Improved hashtag treatment for rejection on Twitter
